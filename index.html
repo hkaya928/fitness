@@ -406,11 +406,18 @@
     .quick-btn svg { width: 24px; height: 24px; color: var(--cyan); }
 
     .habit-row {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 11px 0;
+      padding: 11px 0 12px;
       border-top: 1px solid rgba(255,255,255,.06);
+      text-align: left;
+      appearance: none;
+      -webkit-appearance: none;
     }
     .habit-row:first-child { border-top: 0; padding-top: 0; }
     .check {
@@ -429,8 +436,92 @@
       border-color: var(--green);
       color: #031505;
     }
-    .habit-label { flex: 1; font-size: 14px; font-weight: 760; min-width: 0; }
-    .habit-meta { font-size: 12px; color: var(--dim); font-weight: 750; }
+    .habit-copy {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      gap: 7px;
+    }
+    .habit-main {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .habit-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 850;
+      color: #fff;
+    }
+    .habit-meta {
+      flex-shrink: 0;
+      max-width: 48%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: right;
+      font-size: 12px;
+      color: var(--dim);
+      font-weight: 800;
+    }
+    .habit-progress {
+      height: 5px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+    }
+    .habit-progress > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+    }
+    .habit-row.done .habit-progress > span { width: 100% !important; background: var(--green); }
+
+    .workout-step {
+      border-radius: 16px;
+      background: #151517;
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .workout-step-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .step-number {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(255,255,255,.07);
+      color: rgba(235,235,245,.72);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .workout-log {
+      margin-top: 11px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      padding-top: 11px;
+    }
+    .workout-log summary {
+      cursor: pointer;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 900;
+      list-style: none;
+    }
+    .workout-log summary::-webkit-details-marker { display: none; }
 
     .search {
       width: 100%;
@@ -1450,11 +1541,11 @@
         '</section>' +
         '<section class="card pad" style="margin-top:12px;">' +
           '<div class="row"><div><div class="tiny">Today habits</div><div class="subtext" style="margin-top:3px;">' + habitsDone + ' / 5 complete</div></div><button class="btn small ghost" type="button" data-action="open-targets">' + icon("edit") + 'Targets</button></div>' +
-          '<div style="margin-top:14px;">' + renderHabit("water", "Water", habitValue(rec.metrics.water, state.targets.water, "L"), rec.habits.water) +
-          renderHabit("protein", "Protein", habitValue(rec.metrics.protein, state.targets.protein, "g"), rec.habits.protein) +
-          renderHabit("steps", "Steps", habitValue(rec.metrics.steps, state.targets.steps, ""), rec.habits.steps) +
-          renderHabit("mobility", "Mobility", "10 minutes or warmup done", rec.habits.mobility) +
-          renderHabit("meditation", "Meditation", "5 minute downshift", rec.habits.meditation) + '</div>' +
+          '<div style="margin-top:14px;">' + renderHabit("water", "Water", habitValue(rec.metrics.water, state.targets.water, "L"), rec.habits.water, pct(num(rec.metrics.water), state.targets.water)) +
+          renderHabit("protein", "Protein", habitValue(rec.metrics.protein, state.targets.protein, "g"), rec.habits.protein, pct(num(rec.metrics.protein), state.targets.protein)) +
+          renderHabit("steps", "Steps", habitValue(rec.metrics.steps, state.targets.steps, ""), rec.habits.steps, pct(num(rec.metrics.steps), state.targets.steps)) +
+          renderHabit("mobility", "Mobility", rec.habits.mobility ? "Done" : "Tap when done", rec.habits.mobility, rec.habits.mobility ? 1 : 0) +
+          renderHabit("meditation", "Meditation", rec.habits.meditation ? "Done" : "5 min", rec.habits.meditation, rec.habits.meditation ? 1 : 0) + '</div>' +
         '</section>' +
         '<div class="section-title">This week</div>' +
         '<section class="stack">' + weekTemplates().map(renderWeekCard).join("") + '</section>' +
@@ -1489,16 +1580,16 @@
     function quickBtn(type, label, iconName) {
       return '<button class="quick-btn" type="button" data-action="open-quick" data-type="' + attr(type) + '">' + icon(iconName) + '<span>' + esc(label) + '</span></button>';
     }
-    function renderHabit(id, label, meta, done) {
+    function renderHabit(id, label, meta, done, progress) {
+      var width = Math.round(clamp(progress || 0, 0, 1) * 100);
       return '<button class="habit-row ' + (done ? "done" : "") + '" type="button" data-action="toggle-habit" data-id="' + attr(id) + '">' +
-        '<span class="check">' + icon("check") + '</span><span class="habit-label">' + esc(label) + '</span><span class="habit-meta">' + esc(meta) + '</span>' +
+        '<span class="check">' + icon("check") + '</span><span class="habit-copy"><span class="habit-main"><span class="habit-label">' + esc(label) + '</span><span class="habit-meta">' + esc(meta) + '</span></span><span class="habit-progress" aria-hidden="true"><span style="width:' + width + '%"></span></span></span>' +
       '</button>';
     }
     function habitValue(value, target, unit) {
       var current = value === "" || value == null ? 0 : num(value);
-      var suffix = unit ? unit : "";
-      var currentText = unit ? round(current, unit === "L" ? 1 : 0) + suffix : Math.round(current).toLocaleString();
-      var targetText = unit ? target + suffix : Math.round(target).toLocaleString();
+      var currentText = unit ? round(current, unit === "L" ? 1 : 0) : Math.round(current).toLocaleString();
+      var targetText = unit ? target + unit : Math.round(target).toLocaleString();
       return currentText + " / " + targetText;
     }
     function renderWeekCard(template) {
@@ -2175,16 +2266,18 @@
       var index = 0;
       var rows = plan.map(function (section) {
         var sectionRows = section.items.map(function (e) {
-          var i = index++;
-          return '<div class="card pad" style="padding:13px;margin-bottom:10px;">' +
-            '<div class="row start"><div><div style="font-weight:900;">' + esc(e.name) + '</div><div class="subtext">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div>' + (e.note ? '<div class="subtext" style="margin-top:4px;">' + esc(e.note) + '</div>' : '') + '</div><span class="badge">' + esc(section.label) + '</span></div>' +
-            '<div class="field-row three" style="margin-top:10px;">' + field("Sets", "sets_" + i, e.sets, "number", 'min="0" step="1"') + field("Reps", "reps_" + i, parseInt(e.reps, 10) || "", "number", 'min="0" step="1"') + field("Weight", "weight_" + i, e.weight, "number", 'step="0.5"') + '</div>' +
+          var i = index;
+          var stepNum = index + 1;
+          index++;
+          return '<div class="workout-step">' +
+            '<div class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div>' + (e.note ? '<div class="body-copy" style="margin-top:7px;">' + esc(e.note) + '</div>' : '') + '</div></div><span class="badge">' + esc(section.label) + '</span></div>' +
+            '<details class="workout-log"><summary>Log details</summary><div class="field-row three" style="margin-top:10px;">' + field("Sets", "sets_" + i, e.sets, "number", 'min="0" step="1"') + field("Reps", "reps_" + i, parseInt(e.reps, 10) || "", "number", 'min="0" step="1"') + field("Weight", "weight_" + i, e.weight, "number", 'step="0.5"') + '</div></details>' +
             '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(section.label) + '">' +
           '</div>';
         }).join("");
         return '<div class="section-title" style="margin-top:14px;">' + esc(section.label) + '</div>' + sectionRows;
       }).join("");
-      var body = '<p class="body-copy" style="margin-top:0;">Do these in order. Log what you actually completed, then save the session.</p>' +
+      var body = '<p class="body-copy" style="margin-top:0;">Follow the order top to bottom. Open Log details only when you want to change sets, reps, or load.</p>' +
         '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1"') + field("Date", "date", todayKey(), "date") + '</div>' +
         '<input type="hidden" name="count" value="' + index + '">' +
         '<div style="margin-top:12px;">' + rows + '</div>' +
