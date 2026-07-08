@@ -145,6 +145,13 @@
       place-items: center;
       font-weight: 900;
       font-size: 13px;
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .content {
@@ -591,6 +598,100 @@
       color: var(--muted);
       font-size: 11px;
       font-weight: 850;
+    }
+    details.collapsible-card,
+    details.training-day,
+    details.exercise-bank,
+    details.workout-step {
+      overflow: hidden;
+    }
+    details > summary {
+      list-style: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    .collapse-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 54px;
+    }
+    .collapse-title {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+    .chevron {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      transition: transform .18s ease;
+    }
+    details[open] > summary .chevron {
+      transform: rotate(90deg);
+    }
+    .collapse-body {
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+    .training-day {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+      padding: 0 14px;
+    }
+    .training-day > summary {
+      padding: 12px 0;
+    }
+    .training-day .collapse-body {
+      padding-bottom: 14px;
+    }
+    .exercise-category {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .exercise-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .profile-photo {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.16);
+      background: linear-gradient(135deg, #3a3a3d, #161618);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 950;
+    }
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .profile-photo.small {
+      width: 38px;
+      height: 38px;
+      font-size: 13px;
+    }
+    .add-menu-grid {
+      display: grid;
+      gap: 10px;
     }
 
     .workout-step {
@@ -1077,6 +1178,7 @@
           note: "Home gym, strength, jiu-jitsu, Muay Thai, mobility.",
           goalWeight: 165,
           bodyFatGoal: 14,
+          photo: { data: "", name: "" },
           photos: {
             before: { date: "", data: "", name: "" },
             after: { date: "", data: "", name: "" },
@@ -1568,6 +1670,7 @@
       if (!Array.isArray(data.soccerDrills)) data.soccerDrills = defaultSoccerDrills();
       if (!data.targets) data.targets = defaultState().targets;
       if (!data.profile) data.profile = defaultState().profile;
+      if (!data.profile.photo) data.profile.photo = { data: "", name: "" };
       if (!data.profile.photos) data.profile.photos = defaultState().profile.photos;
       if (previousVersion < 12) {
         if (num(data.targets.water) > 0 && num(data.targets.water) <= 4) data.targets.water = Math.round(num(data.targets.water) * 4);
@@ -1800,7 +1903,7 @@
       }
       document.getElementById("brandSub").textContent = fmtLongDate(new Date()) + " - " + dayCode();
       document.getElementById("streakCount").textContent = String(streak());
-      document.getElementById("avatar").textContent = (state.profile.initials || initials(state.profile.name)).slice(0, 3).toUpperCase();
+      document.getElementById("avatar").innerHTML = renderAvatarContent("small");
       document.querySelectorAll(".nav-btn").forEach(function (btn) {
         btn.setAttribute("aria-current", btn.dataset.tab === ui.tab ? "page" : "false");
       });
@@ -1899,17 +2002,17 @@
       return '<button class="quick-btn" type="button" data-action="open-quick" data-type="' + attr(type) + '">' + icon(iconName) + '<span>' + esc(label) + '</span></button>';
     }
     function renderDailyHabits(rec, summary) {
-      return '<section class="card pad" style="margin-top:12px;">' +
-        '<div class="row"><div><div class="tiny">Today fuel & habits</div><div class="subtext" style="margin-top:3px;">' + summary.done + ' / ' + summary.total + ' targets hit</div></div><button class="btn small ghost" type="button" data-action="open-targets">' + icon("edit") + 'Targets</button></div>' +
-        '<div class="habit-dashboard">' +
+      return '<details class="card pad collapsible-card" data-testid="daily-habits" style="margin-top:12px;">' +
+        '<summary class="collapse-summary"><span class="collapse-title"><span class="tiny">Daily habits</span><span class="subtext">' + summary.done + ' / ' + summary.total + ' targets hit</span></span><span style="display:flex;align-items:center;gap:8px;"><button class="btn small ghost" type="button" data-action="open-targets">' + icon("edit") + 'Targets</button><span class="chevron">›</span></span></summary>' +
+        '<div class="collapse-body"><div class="habit-dashboard">' +
           renderHabitTracker("water", "Water", num(rec.metrics.water), state.targets.water, "cups", [["-1","-1"],["+1","+1 cup"],["+2","+2"]]) +
           renderHabitTracker("creatine", "Creatine", num(rec.metrics.creatine), state.targets.creatine, "g", [["-5","-5"],["+5","+5g"]]) +
           renderHabitTracker("protein", "Protein", num(rec.metrics.protein), state.targets.protein, "g", [["-25","-25"],["+25","+25g"],["+50","+50"]]) +
           renderHabitTracker("steps", "Steps", num(rec.metrics.steps), state.targets.steps, "steps", [["-1000","-1k"],["+1000","+1k"],["+2500","+2.5k"]]) +
           renderHabitTracker("mobility", "Mobility", num(rec.metrics.mobility), 10, "min", [["-5","-5"],["+5","+5 min"],["+10","+10"]]) +
           renderHabitTracker("meditation", "Meditation", num(rec.metrics.meditation), 5, "min", [["-5","-5"],["+5","+5 min"]]) +
-        '</div>' +
-      '</section>';
+        '</div></div>' +
+      '</details>';
     }
     function renderHabitTracker(metric, label, value, target, unit, actions) {
       var done = value >= target;
@@ -2000,21 +2103,78 @@
 
     function renderTrain() {
       var query = ui.trainSearch.toLowerCase().trim();
-      var templates = state.templates.filter(function (t) {
-        var matchesFilter = ui.trainFilter === "all" || t.type.toLowerCase() === ui.trainFilter;
-        var hay = (t.name + " " + t.focus + " " + t.day + " " + t.type + " " + t.exercises.map(function (e) { return e.name; }).join(" ")).toLowerCase();
-        return matchesFilter && (!query || hay.indexOf(query) >= 0);
-      });
-      var exerciseNames = [];
-      state.templates.forEach(function (t) { t.exercises.forEach(function (e) { if (exerciseNames.indexOf(e.name) < 0) exerciseNames.push(e.name); }); });
+      var days = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
       return '<div class="tab-view">' +
         searchBox("trainSearch", "Search workouts, exercises, drills...") +
         renderChips("train", [["all","All"],["lift","Lift"],["combat","Combat"],["recovery","Recovery"]], ui.trainFilter) +
-        '<section class="row" style="margin-bottom:12px;"><div><h1 class="hero-title" style="margin:0;">Training</h1><div class="subtext">Start, edit, duplicate, and complete sessions.</div></div><button class="btn icon cyan" type="button" data-action="open-template" aria-label="Add workout">' + icon("plus") + '</button></section>' +
-        '<section class="stack">' + (templates.length ? templates.map(renderTemplateCard).join("") : '<div class="empty">No workouts match your search.</div>') + '</section>' +
-        '<div class="section-title">Exercise PRs</div>' +
-        '<section class="stack">' + exerciseNames.slice(0, 18).map(renderExerciseRow).join("") + '</section>' +
+        '<section class="row" style="margin-bottom:12px;"><div><h1 class="hero-title" style="margin:0;">Training</h1><div class="subtext">Tap a day to open the workout.</div></div><button class="btn icon cyan" type="button" data-action="open-template" aria-label="Add workout">' + icon("plus") + '</button></section>' +
+        '<section class="stack">' + days.map(function (day) { return renderTrainingDay(day, query); }).join("") + '</section>' +
+        renderExerciseBank(query) +
       '</div>';
+    }
+    function renderTrainingDay(day, query) {
+      var templates = state.templates.filter(function (t) { return t.day === day; });
+      var filtered = templates.filter(function (t) {
+        var matchesFilter = ui.trainFilter === "all" || t.type.toLowerCase() === ui.trainFilter;
+        return matchesFilter && (!query || templateHaystack(t).indexOf(query) >= 0);
+      });
+      var template = filtered[0] || templates[0] || null;
+      var isToday = day === dayCode();
+      if (!template) {
+        return '<details class="training-day" data-testid="training-day-' + attr(day.toLowerCase()) + '"><summary class="collapse-summary"><span class="collapse-title"><span class="tiny">' + esc(day) + '</span><span style="font-weight:900;">No workout</span></span><span class="chevron">›</span></summary><div class="collapse-body"><button class="btn primary full" type="button" data-action="open-template">' + icon("plus") + 'Add workout</button></div></details>';
+      }
+      normalizeTemplate(template);
+      return '<details class="training-day" data-testid="training-day-' + attr(day.toLowerCase()) + '">' +
+        '<summary class="collapse-summary"><span class="collapse-title"><span class="tiny">' + esc(day) + (isToday ? ' · Today' : '') + '</span><span style="font-weight:900;">' + esc(template.name) + '</span><span class="subtext">' + esc(template.type) + ' · ' + esc(template.duration) + ' min · RPE ' + esc(template.rpe) + '</span></span><span class="chevron">›</span></summary>' +
+        '<div class="collapse-body">' +
+          '<p class="body-copy" style="margin:0 0 12px;">' + esc(template.focus) + '</p>' +
+          '<div class="template-sections">' +
+            templateSectionLine("Warmup", template.warmup) +
+            templateSectionLine("Main", template.exercises) +
+            templateSectionLine("Cooldown", template.cooldown) +
+            templateSectionLine("Stretch", template.stretch) +
+          '</div>' +
+          '<div class="row"><button class="btn primary" type="button" data-action="start-template" data-id="' + attr(template.id) + '">' + icon("play") + 'Start Workout</button><div style="display:flex;gap:8px;"><button class="btn small ghost" type="button" data-action="open-template" data-id="' + attr(template.id) + '">' + icon("edit") + 'Edit</button><button class="btn small ghost" type="button" data-action="duplicate-template" data-id="' + attr(template.id) + '">' + icon("plus") + 'Copy</button></div></div>' +
+        '</div>' +
+      '</details>';
+    }
+    function templateHaystack(t) {
+      return (t.name + " " + t.focus + " " + t.day + " " + t.type + " " +
+        ["warmup","exercises","cooldown","stretch"].map(function (key) {
+          return (t[key] || []).map(function (e) { return e.name + " " + e.equipment + " " + e.how + " " + e.tips; }).join(" ");
+        }).join(" ")).toLowerCase();
+    }
+    function renderExerciseBank(query) {
+      var categories = exerciseCategories(query);
+      var keys = Object.keys(categories);
+      var total = keys.reduce(function (sum, key) { return sum + categories[key].length; }, 0);
+      return '<details class="card pad exercise-bank" data-testid="exercise-bank" style="margin-top:14px;">' +
+        '<summary class="collapse-summary"><span class="collapse-title"><span class="tiny">All exercises</span><span class="subtext">' + total + ' saved movements, grouped by category</span></span><span class="chevron">›</span></summary>' +
+        '<div class="collapse-body stack">' + (keys.length ? keys.map(function (category) {
+          return '<div class="exercise-category"><div class="tiny">' + esc(category) + '</div><div class="exercise-chip-list">' + categories[category].map(function (name) { return '<button class="badge" type="button" data-action="open-pr" data-name="' + attr(name) + '">' + esc(name) + '</button>'; }).join("") + '</div></div>';
+        }).join("") : '<div class="empty">No exercises match your search.</div>') + '</div>' +
+      '</details>';
+    }
+    function exerciseCategories(query) {
+      var buckets = { Warmup: [], Strength: [], Combat: [], Recovery: [], Cooldown: [], Stretch: [] };
+      state.templates.forEach(function (t) {
+        normalizeTemplate(t);
+        addExerciseNames(buckets.Warmup, t.warmup, query);
+        addExerciseNames(t.type === "Lift" ? buckets.Strength : t.type === "Combat" ? buckets.Combat : buckets.Recovery, t.exercises, query);
+        addExerciseNames(buckets.Cooldown, t.cooldown, query);
+        addExerciseNames(buckets.Stretch, t.stretch, query);
+      });
+      Object.keys(buckets).forEach(function (key) {
+        buckets[key] = buckets[key].filter(function (name, index, arr) { return arr.indexOf(name) === index; }).sort();
+        if (!buckets[key].length) delete buckets[key];
+      });
+      return buckets;
+    }
+    function addExerciseNames(bucket, items, query) {
+      (items || []).forEach(function (e) {
+        var hay = (e.name + " " + e.equipment + " " + e.how + " " + e.tips).toLowerCase();
+        if (!query || hay.indexOf(query) >= 0) bucket.push(e.name);
+      });
     }
     function renderTemplateCard(template) {
       return '<article class="template-card" data-type="' + attr(template.type) + '">' +
@@ -2403,7 +2563,7 @@
       var m = currentMeasurement();
       return '<div class="tab-view">' +
         '<section class="card hero-card pad">' +
-          '<div class="row start"><div><div class="avatar" style="width:64px;height:64px;font-size:22px;margin-bottom:12px;">' + esc((state.profile.initials || initials(state.profile.name)).slice(0,3).toUpperCase()) + '</div><h1 class="hero-title" style="margin:0;">' + esc(state.profile.name) + '</h1><div class="subtext">' + esc(state.profile.age) + ' - ' + esc(state.profile.height) + ' - ' + esc(state.profile.belt) + '</div></div><button class="btn icon ghost" type="button" data-action="open-profile" aria-label="Edit profile">' + icon("edit") + '</button></div>' +
+          '<div class="row start"><div style="display:flex;gap:13px;align-items:center;min-width:0;"><button class="profile-photo" type="button" data-action="upload-photo" data-slot="profile" aria-label="Upload profile photo">' + renderAvatarContent("large") + '</button><div style="min-width:0;"><h1 class="hero-title" style="margin:0;">' + esc(state.profile.name) + '</h1><div class="subtext">' + esc(state.profile.age) + ' - ' + esc(state.profile.height) + ' - ' + esc(state.profile.belt) + '</div><button class="btn small ghost" type="button" data-action="upload-photo" data-slot="profile" style="margin-top:8px;">Photo</button></div></div><button class="btn icon ghost" type="button" data-action="open-profile" aria-label="Edit profile">' + icon("edit") + '</button></div>' +
           '<p class="body-copy">' + esc(state.profile.note) + '</p>' +
         '</section>' +
         '<section class="grid-3" style="margin-top:12px;">' +
@@ -2417,12 +2577,7 @@
         '<section class="stack">' +
           toolRow("Profile", "Name, stats, belt, notes.", "open-profile", "edit") +
           toolRow("Daily targets", "Steps, water cups, creatine, protein, skill points.", "open-targets", "target") +
-          toolRow("New workout", "Create a new editable training template.", "open-template", "plus") +
-          toolRow("New BJJ principle", "Add your own jiu-jitsu concept.", "open-skill", "plus", ' data-kind="principle"') +
-          toolRow("New BJJ combative", "Add a drill, escape, or technique.", "open-skill", "plus", ' data-kind="combative"') +
-          toolRow("New Muay Thai principle", "Add a striking rule or concept.", "open-skill", "plus", ' data-kind="mt-principle"') +
-          toolRow("New Muay Thai technique", "Add a strike, defense, or clinch drill.", "open-skill", "plus", ' data-kind="mt-technique"') +
-          toolRow("New soccer drill", "Add a touch, passing, or conditioning drill.", "open-soccer-drill", "plus") +
+          toolRow("Add new", "Workout, BJJ, Muay Thai, or soccer.", "open-add-menu", "plus") +
         '</section>' +
         '<div class="section-title">Data tools</div>' +
         '<section class="stack">' +
@@ -2430,8 +2585,13 @@
           toolRow("Import backup", "Restore from a KAYA JSON export.", "import-data", "upload") +
           toolRow("Reset app", "Erase this phone browser's local KAYA data.", "confirm-reset", "trash", "", "danger") +
         '</section>' +
-        '<p class="subtext" style="text-align:center;margin:18px 8px 0;">KAYA v11 - single HTML. Your training data and photos are saved only in this browser on this phone unless you export them.</p>' +
+        '<p class="subtext" style="text-align:center;margin:18px 8px 0;">KAYA v12 - single HTML. Your training data and photos are saved only in this browser on this phone unless you export them.</p>' +
       '</div>';
+    }
+    function renderAvatarContent(size) {
+      var photo = state.profile.photo || {};
+      if (photo.data) return '<img src="' + attr(photo.data) + '" alt="Profile photo">';
+      return esc((state.profile.initials || initials(state.profile.name)).slice(0, size === "large" ? 3 : 2).toUpperCase());
     }
     function renderPhotoCard(slot, label) {
       var photo = (state.profile.photos && state.profile.photos[slot]) || { date: "", data: "" };
@@ -2447,6 +2607,17 @@
       return '<button class="card pad row" type="button" data-action="' + attr(action) + '"' + (extra || "") + ' style="text-align:left;">' +
         '<span style="display:flex;align-items:center;gap:12px;min-width:0;"><span class="template-icon" style="' + (cls === "danger" ? "color:var(--danger);background:rgba(255,69,58,.10);" : "") + '">' + icon(iconName) + '</span><span style="min-width:0;"><span style="display:block;font-weight:900;">' + esc(title) + '</span><span class="subtext">' + esc(sub) + '</span></span></span>' +
         '<span class="dim">></span></button>';
+    }
+    function openAddMenu() {
+      var body = '<div class="add-menu-grid">' +
+        toolRow("Workout", "Create a training day.", "open-template", "plus") +
+        toolRow("BJJ principle", "Add a jiu-jitsu concept.", "open-skill", "plus", ' data-kind="principle"') +
+        toolRow("BJJ combative", "Add a drill, escape, or technique.", "open-skill", "plus", ' data-kind="combative"') +
+        toolRow("Muay Thai principle", "Add a striking rule.", "open-skill", "plus", ' data-kind="mt-principle"') +
+        toolRow("Muay Thai technique", "Add a strike, defense, or clinch drill.", "open-skill", "plus", ' data-kind="mt-technique"') +
+        toolRow("Soccer drill", "Add touch, passing, or finishing work.", "open-soccer-drill", "plus") +
+      '</div>';
+      openModal("Add new", body, { single: true, html: '<button class="btn ghost full" type="button" data-action="close-modal">Close</button>' });
     }
 
     function searchBox(key, placeholder) {
@@ -2498,6 +2669,7 @@
       if (action === "favorite-soccer") { favoriteSoccer(btn.dataset.id); return; }
       if (action === "open-soccer-drill") { openSoccerDrill(btn.dataset.id || null); return; }
       if (action === "open-profile") { openProfile(); return; }
+      if (action === "open-add-menu") { openAddMenu(); return; }
       if (action === "upload-photo") { pendingPhotoSlot = btn.dataset.slot; photoFile.click(); return; }
       if (action === "export-data") { exportData(); return; }
       if (action === "import-data") { importFile.click(); return; }
@@ -2579,6 +2751,16 @@
       if (!file || !pendingPhotoSlot) return;
       var reader = new FileReader();
       reader.onload = function () {
+        if (pendingPhotoSlot === "profile") {
+          if (!state.profile.photo) state.profile.photo = { data: "", name: "" };
+          state.profile.photo.data = String(reader.result || "");
+          state.profile.photo.name = file.name || "";
+          persist();
+          photoFile.value = "";
+          pendingPhotoSlot = "";
+          render();
+          return;
+        }
         if (!state.profile.photos) state.profile.photos = defaultState().profile.photos;
         if (!state.profile.photos[pendingPhotoSlot]) state.profile.photos[pendingPhotoSlot] = { date: "", data: "", name: "" };
         state.profile.photos[pendingPhotoSlot].data = String(reader.result || "");
@@ -2803,12 +2985,12 @@
     function renderWorkoutExercise(phase, e, i, stepNum, setCount) {
       var setRows = [];
       for (var s = 0; s < setCount; s++) setRows.push(renderSetRow(i, s, e));
-      return '<div class="workout-step">' +
-        '<div class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div></div></div><span class="badge">' + esc(phase) + '</span></div>' +
-        '<div class="exercise-guide"><div><div class="tiny">Equipment</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.equipment) + '</p></div><div><div class="tiny">How</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.how) + '</p></div><div><div class="tiny">Tips</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.tips || e.note) + '</p></div></div>' +
+      return '<details class="workout-step" data-testid="workout-step-' + i + '">' +
+        '<summary class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' · rest ' + esc(e.rest) + 's' : '') + '</div></div></div><span style="display:flex;align-items:center;gap:8px;"><span class="badge">' + esc(phase) + '</span><span class="chevron">›</span></span></summary>' +
+        '<div class="collapse-body"><div class="exercise-guide"><div><div class="tiny">Equipment</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.equipment) + '</p></div><div><div class="tiny">How</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.how) + '</p></div><div><div class="tiny">Tips</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.tips || e.note) + '</p></div></div>' +
         '<div class="set-table">' + setRows.join("") + '</div>' +
-        '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(phase) + '"><input type="hidden" name="setcount_' + i + '" value="' + setCount + '">' +
-      '</div>';
+        '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(phase) + '"><input type="hidden" name="setcount_' + i + '" value="' + setCount + '"></div>' +
+      '</details>';
     }
 
     function renderSetRow(exerciseIndex, setIndex, e) {
