@@ -483,6 +483,115 @@
       background: linear-gradient(90deg, var(--cyan), var(--green));
     }
     .habit-row.done .habit-progress > span { width: 100% !important; background: var(--green); }
+    .habit-dashboard {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .habit-card {
+      border-radius: 16px;
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+    .habit-topline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .habit-value {
+      font-size: 25px;
+      font-weight: 950;
+      line-height: 1;
+      margin-top: 7px;
+    }
+    .habit-value span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .habit-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 11px;
+    }
+    .habit-actions .btn {
+      min-height: 34px;
+      padding: 0 11px;
+      font-size: 12px;
+    }
+    .habit-card.done {
+      border-color: rgba(52,199,89,.32);
+      background: linear-gradient(180deg, rgba(52,199,89,.13), rgba(255,255,255,.035));
+    }
+    .habit-card.done .habit-value { color: var(--green); }
+    .plan-toggle {
+      display: flex;
+      padding: 3px;
+      gap: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .plan-toggle .chip {
+      margin: 0;
+      min-height: 31px;
+      padding: 0 12px;
+    }
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .month-day {
+      min-height: 74px;
+      border-radius: 13px;
+      padding: 8px 6px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.035);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow: hidden;
+    }
+    .month-day.today {
+      border-color: rgba(250,17,79,.45);
+      background: rgba(250,17,79,.10);
+    }
+    .month-day.done {
+      border-color: rgba(52,199,89,.38);
+      background: rgba(52,199,89,.10);
+    }
+    .month-num {
+      font-size: 11px;
+      font-weight: 950;
+      color: rgba(235,235,245,.78);
+    }
+    .month-workout {
+      font-size: 9px;
+      line-height: 1.15;
+      font-weight: 850;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+    .template-sections {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .template-section-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+    }
 
     .workout-step {
       border-radius: 16px;
@@ -554,6 +663,56 @@
       width: 18px;
       height: 18px;
       accent-color: var(--green);
+    }
+    .exercise-guide {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+      padding: 11px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .set-table {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .set-row {
+      display: grid;
+      grid-template-columns: 54px 1fr 1fr;
+      align-items: end;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.035);
+    }
+    .set-row.done {
+      border-color: rgba(52,199,89,.34);
+      background: rgba(52,199,89,.09);
+    }
+    .set-check {
+      display: grid;
+      place-items: center;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+    }
+    .set-check input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--green);
+    }
+    .set-row .field {
+      margin: 0;
+    }
+    .workout-progress-text {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--green);
     }
 
     .search {
@@ -882,7 +1041,7 @@
     "use strict";
 
     var STORAGE_KEY = "kaya.fitness.single.html.v10";
-    var VERSION = 11;
+    var VERSION = 12;
     var storageOK = true;
     var state = loadState();
     var ui = {
@@ -892,6 +1051,7 @@
       soccerFilter: "all",
       skillDiscipline: "",
       progressFilter: "overall",
+      workoutView: "week",
       trainSearch: "",
       skillSearch: "",
       activeWorkoutId: "",
@@ -925,9 +1085,10 @@
         },
         targets: {
           steps: 9000,
-          water: 3,
+          water: 12,
           protein: 165,
-          skill: 50,
+          creatine: 5,
+          skill: 10,
           sleep: 7.5
         },
         days: {},
@@ -1078,15 +1239,94 @@
       ];
     }
 
-    function ex(name, sets, reps, weight, rest, note) {
-      return { id: uid("ex"), name: name, sets: sets, reps: reps, weight: weight, rest: rest, note: note || "" };
+    function ex(name, sets, reps, weight, rest, note, equipment, how, tips) {
+      var guide = exerciseGuide(name);
+      return {
+        id: uid("ex"),
+        name: name,
+        sets: sets,
+        reps: reps,
+        weight: weight,
+        rest: rest,
+        note: note || "",
+        equipment: equipment || guide.equipment,
+        how: how || guide.how,
+        tips: tips || guide.tips
+      };
     }
 
     function normalizeTemplate(template) {
       if (!template.warmup) template.warmup = defaultWarmup(template.type);
       if (!template.cooldown) template.cooldown = defaultCooldown(template.type);
+      if (!template.stretch) template.stretch = defaultStretch(template.type);
       if (!Array.isArray(template.exercises)) template.exercises = [];
+      ["warmup","exercises","cooldown","stretch"].forEach(function (section) {
+        template[section] = (template[section] || []).map(normalizeExercise);
+      });
       return template;
+    }
+
+    function normalizeExercise(item) {
+      if (!item) return ex("Exercise", 1, "8-12", 0, 60, "");
+      var guide = exerciseGuide(item.name || "Exercise");
+      item.id = item.id || uid("ex");
+      item.sets = num(item.sets, 1);
+      item.reps = item.reps == null ? "8-12" : String(item.reps);
+      item.weight = num(item.weight);
+      item.rest = num(item.rest);
+      item.note = item.note || "";
+      item.equipment = item.equipment || guide.equipment;
+      item.how = item.how || guide.how;
+      item.tips = item.tips || guide.tips;
+      return item;
+    }
+
+    function exerciseGuide(name) {
+      var n = String(name || "").toLowerCase();
+      var fallback = {
+        equipment: "As needed",
+        how: "Set your position first, move with control, and stop each rep before form breaks.",
+        tips: "Use a smooth tempo and leave one clean rep in reserve."
+      };
+      var guides = [
+        ["pull-up", "Pull-up bar or assisted machine", "Start from a dead hang, pull elbows down toward ribs, clear the bar with your chin, then lower under control.", "Keep ribs down and avoid kicking for momentum."],
+        ["incline dumbbell press", "Adjustable bench, dumbbells", "Set the bench at a low incline, press dumbbells up over upper chest, then lower until elbows are slightly below chest level.", "Keep shoulder blades pinned and wrists stacked."],
+        ["chest-supported row", "Incline bench or row machine", "Lie chest-down, pull handles toward lower ribs, pause, then lower until shoulders reach forward.", "Do not shrug; drive elbows back."],
+        ["lateral raise", "Dumbbells or cables", "Raise arms out to the sides with soft elbows until hands reach shoulder height, then lower slowly.", "Lead with elbows and keep traps quiet."],
+        ["face pull", "Cable rope or band", "Pull rope toward eyes with elbows high, rotate thumbs back, then return with control.", "Finish with shoulder blades down and back."],
+        ["ez curl", "EZ bar", "Curl with elbows close to sides, squeeze at the top, and lower without swinging.", "Keep hips still."],
+        ["rope pressdown", "Cable stack, rope", "Pin elbows by your sides, press rope down, separate ends at lockout, then return slowly.", "Only forearms move."],
+        ["back squat", "Rack, barbell, plates", "Brace, unrack, sit between hips, reach depth, then drive up through mid-foot.", "Keep knees tracking over toes and chest proud."],
+        ["romanian deadlift", "Barbell or dumbbells", "Hinge hips back with soft knees, lower until hamstrings stretch, then stand by driving hips through.", "Keep lats tight and spine neutral."],
+        ["bulgarian split squat", "Bench, dumbbells", "Set rear foot on bench, descend with front knee tracking toes, then drive through front foot.", "Control the bottom; do not bounce."],
+        ["leg curl", "Leg curl machine", "Curl heels toward glutes, squeeze hamstrings, and lower slowly.", "Keep hips glued to the pad."],
+        ["standing calf raise", "Calf machine or dumbbells", "Rise high onto toes, pause, lower into a full stretch, then repeat.", "Use full range, not bouncing."],
+        ["hanging knee raise", "Pull-up bar or captain chair", "Hang tall, tuck pelvis, raise knees toward chest, then lower without swinging.", "Exhale as knees rise."],
+        ["shadow boxing", "Open space", "Move in stance, throw clean combinations, defend after each exchange, and exit on an angle.", "Hands come back to guard every time."],
+        ["technical stand-up", "Mat or open floor", "Frame with one hand, post opposite foot, lift hips back, and stand without crossing feet.", "Protect your head first."],
+        ["shrimp escape", "Mat", "Turn to one side, push off feet, slide hips away, then recover knees and frames.", "Create space before turning back in."],
+        ["trap & roll escape", "Mat, partner or dummy optional", "Trap same-side arm and foot, bridge diagonally, roll to top, and stabilize posture.", "Bridge first, then turn."],
+        ["guard retention", "Mat", "Keep knees between you and the passer, frame, hip out, and recover guard.", "Win inside knee position."],
+        ["overhead press", "Rack, barbell, plates", "Brace ribs down, press bar straight overhead, move head through, then lower to shoulders.", "Squeeze glutes to avoid leaning back."],
+        ["bench press", "Bench, barbell, plates", "Set shoulder blades, lower bar to lower chest, press up and slightly back over shoulders.", "Use leg drive without bouncing."],
+        ["one-arm dumbbell row", "Dumbbell, bench", "Brace on bench, row elbow toward hip, pause, then lower until shoulder reaches.", "Do not rotate open."],
+        ["weighted dip", "Dip bars, belt or dumbbell", "Lower with shoulders packed, press back to locked elbows, and keep torso controlled.", "Stop if shoulders pinch."],
+        ["rear delt fly", "Dumbbells or cables", "Hinge slightly, sweep arms wide with soft elbows, then lower slowly.", "Think wide, not high."],
+        ["hammer curl", "Dumbbells", "Curl with palms facing in, squeeze, and lower under control.", "Keep wrists neutral."],
+        ["deadlift", "Barbell, plates", "Set mid-foot under bar, wedge hips, brace, push the floor away, and stand tall.", "Bar stays close the whole rep."],
+        ["front squat", "Rack, barbell, plates", "Set elbows high, brace, squat between hips, then drive up without dropping elbows.", "Stay tall out of the bottom."],
+        ["hip thrust", "Bench, barbell or machine", "Set upper back on bench, drive hips up, tuck pelvis, squeeze glutes, then lower.", "Do not overarch your back."],
+        ["walking lunge", "Dumbbells or bodyweight", "Step long, lower under control, drive through front foot, and alternate legs.", "Keep torso tall."],
+        ["cable chop", "Cable machine or band", "Set cable high or low, brace, rotate through trunk, and control the return.", "Move ribs and hips together."],
+        ["loaded carry", "Dumbbells, kettlebells, or trap bar", "Pick heavy implements, stand tall, walk with short controlled steps, and keep shoulders level.", "Do not let ribs flare."],
+        ["mobility", "Mat", "Move through hips, ankles, t-spine, and shoulders without forcing end range.", "Slow breathing makes it work better."],
+        ["stretch", "Mat", "Ease into the position, breathe, and hold a tolerable stretch without pain.", "Relax on each exhale."],
+        ["walk", "Treadmill or open space", "Walk easy enough to nasal breathe and let heart rate come down.", "Finish calmer than you started."]
+      ];
+      for (var i = 0; i < guides.length; i++) {
+        if (n.indexOf(guides[i][0]) >= 0) return { equipment: guides[i][1], how: guides[i][2], tips: guides[i][3] };
+      }
+      return fallback;
     }
 
     function defaultWarmup(type) {
@@ -1125,6 +1365,25 @@
       return [
         ex("Loaded Area Stretch", 1, "4 min", 0, 0, "Stretch the muscles trained today."),
         ex("Walk Downshift", 1, "5 min", 0, 0, "Bring heart rate down.")
+      ];
+    }
+
+    function defaultStretch(type) {
+      if (type === "Combat") {
+        return [
+          ex("Hip Flexor Stretch", 1, "60 sec/side", 0, 0, "Long exhale and glute squeeze."),
+          ex("Neck + Trap Stretch", 1, "45 sec/side", 0, 0, "Gentle pressure only.")
+        ];
+      }
+      if (type === "Recovery") {
+        return [
+          ex("Couch Stretch", 1, "90 sec/side", 0, 0, "Breathe into the front hip."),
+          ex("T-Spine Open Book", 1, "8/side", 0, 0, "Slow controlled rotation.")
+        ];
+      }
+      return [
+        ex("Trained Muscle Stretch", 1, "60 sec", 0, 0, "Stretch the main muscles trained today."),
+        ex("90/90 Hip Switch", 1, "8/side", 0, 0, "Move smoothly and keep breathing.")
       ];
     }
 
@@ -1298,6 +1557,7 @@
     }
 
     function migrate(data) {
+      var previousVersion = num(data.version, 0);
       data.version = VERSION;
       if (!data.days) data.days = {};
       if (!Array.isArray(data.sessions)) data.sessions = [];
@@ -1309,7 +1569,13 @@
       if (!data.targets) data.targets = defaultState().targets;
       if (!data.profile) data.profile = defaultState().profile;
       if (!data.profile.photos) data.profile.photos = defaultState().profile.photos;
+      if (previousVersion < 12) {
+        if (num(data.targets.water) > 0 && num(data.targets.water) <= 4) data.targets.water = Math.round(num(data.targets.water) * 4);
+        if (num(data.targets.skill) >= 25) data.targets.skill = 10;
+      }
+      if (data.targets.creatine == null) data.targets.creatine = 5;
       data.templates.forEach(function (template) { normalizeTemplate(template); });
+      Object.keys(data.days).forEach(function (date) { normalizeDay(data.days[date]); });
       ensureToday(data);
       return data;
     }
@@ -1341,8 +1607,8 @@
       if (!s.days[key]) {
         s.days[key] = {
           date: key,
-          habits: { water: false, protein: false, mobility: false, steps: false, meditation: false },
-          metrics: { sleep: "", soreness: "", steps: "", water: "", protein: "" },
+          habits: { water: false, protein: false, creatine: false, mobility: false, steps: false, meditation: false },
+          metrics: { sleep: "", soreness: "", steps: "", water: "", protein: "", creatine: "", mobility: "", meditation: "" },
           skillReps: 0,
           muayThaiReps: 0,
           soccerMinutes: 0,
@@ -1360,8 +1626,8 @@
       if (!state.days[key]) {
         state.days[key] = {
           date: key,
-          habits: { water: false, protein: false, mobility: false, steps: false, meditation: false },
-          metrics: { sleep: "", soreness: "", steps: "", water: "", protein: "" },
+          habits: { water: false, protein: false, creatine: false, mobility: false, steps: false, meditation: false },
+          metrics: { sleep: "", soreness: "", steps: "", water: "", protein: "", creatine: "", mobility: "", meditation: "" },
           skillReps: 0,
           muayThaiReps: 0,
           soccerMinutes: 0,
@@ -1375,15 +1641,40 @@
     }
 
     function normalizeDay(record) {
-      if (!record.habits) record.habits = { water: false, protein: false, mobility: false, steps: false, meditation: false };
-      if (!record.metrics) record.metrics = { sleep: "", soreness: "", steps: "", water: "", protein: "" };
+      if (!record.habits) record.habits = {};
+      ["water","protein","creatine","mobility","steps","meditation"].forEach(function (key) {
+        if (record.habits[key] == null) record.habits[key] = false;
+      });
+      if (!record.metrics) record.metrics = {};
+      ["sleep","soreness","steps","water","protein","creatine","mobility","meditation"].forEach(function (key) {
+        if (record.metrics[key] == null) record.metrics[key] = "";
+      });
       if (record.skillReps == null) record.skillReps = 0;
       if (record.muayThaiReps == null) record.muayThaiReps = 0;
       if (record.soccerMinutes == null) record.soccerMinutes = 0;
       if (!record.skillLog) record.skillLog = {};
       if (!Array.isArray(record.completedTemplates)) record.completedTemplates = [];
       if (record.note == null) record.note = "";
+      updateHabitCompletion(record);
       return record;
+    }
+
+    function updateHabitCompletion(record) {
+      if (!record || !record.metrics || !record.habits) return record;
+      var targets = (state && state.targets) ? state.targets : { water: 12, protein: 165, creatine: 5, steps: 9000 };
+      record.habits.water = num(record.metrics.water) >= num(targets.water, 12);
+      record.habits.protein = num(record.metrics.protein) >= num(targets.protein, 165);
+      record.habits.creatine = num(record.metrics.creatine) >= num(targets.creatine, 5);
+      record.habits.steps = num(record.metrics.steps) >= num(targets.steps, 9000);
+      record.habits.mobility = num(record.metrics.mobility) >= 10;
+      record.habits.meditation = num(record.metrics.meditation) >= 5;
+      return record;
+    }
+
+    function habitStats(rec) {
+      updateHabitCompletion(rec);
+      var keys = ["water","protein","creatine","steps","mobility","meditation"];
+      return { done: keys.filter(function (key) { return !!rec.habits[key]; }).length, total: keys.length };
     }
 
     function esc(value) {
@@ -1459,11 +1750,11 @@
       return Math.min(4, sessions * 2 + soccer * 2 + Math.floor(habits / 2) + (skills >= 25 ? 1 : 0) + (num(d.soccerMinutes) >= 20 ? 1 : 0));
     }
     function tier(reps) {
-      var tiers = [[100,"Touched"],[250,"Familiar"],[500,"Functional"],[1000,"Sharp"],[5000,"Ingrained"],[10000,"Mastered"]];
+      var tiers = [[25,"Started"],[100,"Familiar"],[250,"Reliable"],[500,"Sharp"],[1000,"Complete"]];
       var label = "New";
       var lo = 0;
-      var hi = 100;
-      var next = "Touched";
+      var hi = 25;
+      var next = "Started";
       for (var i = 0; i < tiers.length; i++) {
         if (reps >= tiers[i][0]) {
           label = tiers[i][1];
@@ -1476,7 +1767,7 @@
           break;
         }
       }
-      var bar = reps >= 10000 ? 100 : Math.round(((reps - lo) / (hi - lo)) * 100);
+      var bar = round(pct(reps, 1000) * 100, 1);
       return { label: label, next: next, bar: clamp(bar, 0, 100) };
     }
 
@@ -1536,7 +1827,7 @@
       var trainPct = sessions.length ? 1 : 0;
       var skillTotal = num(rec.skillReps) + num(rec.muayThaiReps);
       var skillPct = pct(skillTotal, state.targets.skill);
-      var habitsDone = Object.values(rec.habits || {}).filter(Boolean).length;
+      var habitSummary = habitStats(rec);
       var greeting = new Date().getHours() < 12 ? "Good morning" : (new Date().getHours() < 18 ? "Good afternoon" : "Good evening");
       return '<div class="tab-view">' +
         '<h1 class="hero-title">' + greeting + ', ' + esc((state.profile.name || "Hasan").split(" ")[0]) + '</h1>' +
@@ -1574,16 +1865,8 @@
             quickBtn("skill", "Skill", "target") +
           '</div>' +
         '</section>' +
-        '<section class="card pad" style="margin-top:12px;">' +
-          '<div class="row"><div><div class="tiny">Today habits</div><div class="subtext" style="margin-top:3px;">' + habitsDone + ' / 5 complete</div></div><button class="btn small ghost" type="button" data-action="open-targets">' + icon("edit") + 'Targets</button></div>' +
-          '<div style="margin-top:14px;">' + renderHabit("water", "Water", habitValue(rec.metrics.water, state.targets.water, "L"), rec.habits.water, pct(num(rec.metrics.water), state.targets.water)) +
-          renderHabit("protein", "Protein", habitValue(rec.metrics.protein, state.targets.protein, "g"), rec.habits.protein, pct(num(rec.metrics.protein), state.targets.protein)) +
-          renderHabit("steps", "Steps", habitValue(rec.metrics.steps, state.targets.steps, ""), rec.habits.steps, pct(num(rec.metrics.steps), state.targets.steps)) +
-          renderHabit("mobility", "Mobility", rec.habits.mobility ? "Done" : "Tap when done", rec.habits.mobility, rec.habits.mobility ? 1 : 0) +
-          renderHabit("meditation", "Meditation", rec.habits.meditation ? "Done" : "5 min", rec.habits.meditation, rec.habits.meditation ? 1 : 0) + '</div>' +
-        '</section>' +
-        '<div class="section-title">This week</div>' +
-        '<section class="stack">' + weekTemplates().map(renderWeekCard).join("") + '</section>' +
+        renderDailyHabits(rec, habitSummary) +
+        renderWorkoutCalendar() +
       '</div>';
     }
 
@@ -1615,6 +1898,32 @@
     function quickBtn(type, label, iconName) {
       return '<button class="quick-btn" type="button" data-action="open-quick" data-type="' + attr(type) + '">' + icon(iconName) + '<span>' + esc(label) + '</span></button>';
     }
+    function renderDailyHabits(rec, summary) {
+      return '<section class="card pad" style="margin-top:12px;">' +
+        '<div class="row"><div><div class="tiny">Today fuel & habits</div><div class="subtext" style="margin-top:3px;">' + summary.done + ' / ' + summary.total + ' targets hit</div></div><button class="btn small ghost" type="button" data-action="open-targets">' + icon("edit") + 'Targets</button></div>' +
+        '<div class="habit-dashboard">' +
+          renderHabitTracker("water", "Water", num(rec.metrics.water), state.targets.water, "cups", [["-1","-1"],["+1","+1 cup"],["+2","+2"]]) +
+          renderHabitTracker("creatine", "Creatine", num(rec.metrics.creatine), state.targets.creatine, "g", [["-5","-5"],["+5","+5g"]]) +
+          renderHabitTracker("protein", "Protein", num(rec.metrics.protein), state.targets.protein, "g", [["-25","-25"],["+25","+25g"],["+50","+50"]]) +
+          renderHabitTracker("steps", "Steps", num(rec.metrics.steps), state.targets.steps, "steps", [["-1000","-1k"],["+1000","+1k"],["+2500","+2.5k"]]) +
+          renderHabitTracker("mobility", "Mobility", num(rec.metrics.mobility), 10, "min", [["-5","-5"],["+5","+5 min"],["+10","+10"]]) +
+          renderHabitTracker("meditation", "Meditation", num(rec.metrics.meditation), 5, "min", [["-5","-5"],["+5","+5 min"]]) +
+        '</div>' +
+      '</section>';
+    }
+    function renderHabitTracker(metric, label, value, target, unit, actions) {
+      var done = value >= target;
+      var width = Math.round(pct(value, target) * 100);
+      var valueText = unit === "steps" ? Math.round(value).toLocaleString() : round(value, unit === "cups" ? 1 : 0);
+      var targetText = unit === "steps" ? Math.round(target).toLocaleString() : target;
+      return '<article class="habit-card ' + (done ? "done" : "") + '">' +
+        '<div class="habit-topline"><div><div class="tiny">' + esc(label) + '</div><div class="habit-value">' + esc(valueText) + '<span> / ' + esc(targetText) + ' ' + esc(unit) + '</span></div></div><span class="badge ' + (done ? "green" : "") + '">' + (done ? "Hit" : width + "%") + '</span></div>' +
+        '<div class="habit-progress" style="margin-top:11px;"><span style="width:' + width + '%"></span></div>' +
+        '<div class="habit-actions">' + actions.map(function (action) {
+          return '<button class="btn small ghost" type="button" data-action="habit-step" data-metric="' + attr(metric) + '" data-amount="' + attr(action[0]) + '">' + esc(action[1]) + '</button>';
+        }).join("") + '<button class="btn small ghost" type="button" data-action="open-quick" data-type="nutrition">Edit</button></div>' +
+      '</article>';
+    }
     function renderHabit(id, label, meta, done, progress) {
       var width = Math.round(clamp(progress || 0, 0, 1) * 100);
       return '<button class="habit-row ' + (done ? "done" : "") + '" type="button" data-action="toggle-habit" data-id="' + attr(id) + '">' +
@@ -1636,10 +1945,49 @@
           (done ? '<span class="badge green">Done</span>' : (today ? '<span class="badge red">Today</span>' : '<span class="badge">' + esc(template.duration) + 'm</span>')) +
         '</div></article>';
     }
+    function renderWorkoutCalendar() {
+      return '<section style="margin-top:18px;">' +
+        '<div class="row" style="margin:0 4px 12px;"><div class="section-title" style="margin:0;">Workout plan</div><div class="plan-toggle">' +
+          '<button class="chip ' + (ui.workoutView === "week" ? "active" : "") + '" type="button" data-action="set-workout-view" data-view="week">Week</button>' +
+          '<button class="chip ' + (ui.workoutView === "month" ? "active" : "") + '" type="button" data-action="set-workout-view" data-view="month">Month</button>' +
+        '</div></div>' +
+        (ui.workoutView === "month" ? renderMonthWorkouts() : '<section class="stack">' + weekTemplates().map(renderWeekPlanCard).join("") + '</section>') +
+      '</section>';
+    }
+    function renderWeekPlanCard(template) {
+      var done = dayRecord().completedTemplates.indexOf(template.id) >= 0 || sessionsOn(todayKey()).some(function (s) { return s.templateId === template.id; });
+      return '<article class="template-card" data-type="' + attr(template.type) + '">' +
+        '<div class="template-head">' +
+          '<div class="template-icon">' + esc(template.day) + '</div><div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:850;">' + esc(template.name) + '</div><div class="subtext" style="margin-top:2px;">' + esc(template.focus) + '</div></div>' +
+          (done ? '<span class="badge green">Done</span>' : '<button class="btn small primary" type="button" data-action="start-template" data-id="' + attr(template.id) + '">' + icon("play") + 'Start</button>') +
+        '</div></article>';
+    }
+    function renderMonthWorkouts() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = now.getMonth();
+      var first = new Date(year, month, 1);
+      var daysInMonth = new Date(year, month + 1, 0).getDate();
+      var cells = [];
+      for (var pad = 0; pad < first.getDay(); pad++) cells.push('<div></div>');
+      for (var day = 1; day <= daysInMonth; day++) {
+        var d = new Date(year, month, day);
+        var key = dateKeyFrom(d);
+        var template = state.templates.find(function (t) { return t.day === dayCode(d); });
+        var done = sessionsOn(key).some(function (s) { return template && s.templateId === template.id; });
+        var isToday = key === todayKey();
+        cells.push('<button class="month-day ' + (isToday ? "today " : "") + (done ? "done" : "") + '" type="button" data-action="start-template" data-id="' + attr(template ? template.id : "") + '"' + (template ? "" : " disabled") + '><span class="month-num">' + day + '</span><span class="month-workout">' + esc(template ? template.name.replace(/^Lift |^Combat - /, "") : "") + '</span>' + (done ? '<span class="badge green" style="font-size:8px;min-height:18px;padding:0 5px;">Done</span>' : "") + '</button>');
+      }
+      return '<div class="month-grid" aria-label="Monthly workout plan">' + cells.join("") + '</div>';
+    }
+    function dateKeyFrom(d) {
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
     function recoveryScore(rec) {
       var sleep = pct(num(rec.metrics.sleep), state.targets.sleep) * 40;
       var soreness = rec.metrics.soreness === "" ? 25 : (6 - num(rec.metrics.soreness)) / 5 * 30;
-      var habits = Object.values(rec.habits || {}).filter(Boolean).length / 5 * 30;
+      var summary = habitStats(rec);
+      var habits = summary.done / summary.total * 30;
       return clamp(Math.round(sleep + soreness + habits), 0, 100);
     }
     function recoveryCopy(rec) {
@@ -1647,7 +1995,7 @@
       if (s >= 80) return "Primed. Push if warmups agree.";
       if (s >= 60) return "Good. Train with discipline.";
       if (s >= 40) return "Manage volume and respect joints.";
-      return "Recover first. Skill reps and walking.";
+      return "Recover first. Skill points and walking.";
     }
 
     function renderTrain() {
@@ -1677,9 +2025,20 @@
         '</div>' +
         '<div style="padding:0 14px 14px;">' +
           '<p class="body-copy" style="margin:0 0 12px;">' + esc(template.focus) + '</p>' +
-          '<div class="chips" style="margin-bottom:12px;">' + template.exercises.slice(0, 5).map(function (e) { return '<span class="badge">' + esc(e.name) + '</span>'; }).join("") + (template.exercises.length > 5 ? '<span class="badge">+' + (template.exercises.length - 5) + '</span>' : "") + '</div>' +
+          '<div class="template-sections">' +
+            templateSectionLine("Warmup", template.warmup) +
+            templateSectionLine("Main", template.exercises) +
+            templateSectionLine("Cooldown", template.cooldown) +
+            templateSectionLine("Stretch", template.stretch) +
+          '</div>' +
           '<div class="row"><button class="btn primary" type="button" data-action="start-template" data-id="' + attr(template.id) + '">' + icon("play") + 'Start</button><div style="display:flex;gap:8px;"><button class="btn small ghost" type="button" data-action="open-template" data-id="' + attr(template.id) + '">' + icon("edit") + 'Edit</button><button class="btn small ghost" type="button" data-action="duplicate-template" data-id="' + attr(template.id) + '">' + icon("plus") + 'Copy</button></div></div>' +
         '</div></article>';
+    }
+    function templateSectionLine(label, items) {
+      items = items || [];
+      var names = items.slice(0, 3).map(function (e) { return e.name; }).join(", ");
+      if (items.length > 3) names += ", +" + (items.length - 3);
+      return '<div class="template-section-line"><span>' + esc(label) + '</span><span>' + esc(items.length ? names : "None") + '</span></div>';
     }
     function renderExerciseRow(name) {
       var pr = state.prs[name];
@@ -1701,10 +2060,10 @@
           '</section>' +
           '<div class="section-title">Today</div>' +
           '<section class="grid-2">' +
-            miniStat("BJJ", num(dayRecord().skillReps), "reps", "var(--cyan)") +
-            miniStat("Muay Thai", num(dayRecord().muayThaiReps), "reps", "var(--red-soft)") +
+            miniStat("BJJ", num(dayRecord().skillReps), "points", "var(--cyan)") +
+            miniStat("Muay Thai", num(dayRecord().muayThaiReps), "points", "var(--red-soft)") +
             miniStat("Soccer", num(dayRecord().soccerMinutes), "min", "var(--green)") +
-            miniStat("Skill Total", num(dayRecord().skillReps) + num(dayRecord().muayThaiReps), "reps", "#fff") +
+            miniStat("Skill Total", num(dayRecord().skillReps) + num(dayRecord().muayThaiReps), "points", "#fff") +
           '</section>' +
         '</div>';
       }
@@ -1739,7 +2098,7 @@
           '<div class="row"><button class="btn small ghost" type="button" data-action="back-skills">Back</button><button class="btn icon cyan" type="button" data-action="open-skill" data-kind="' + (isMuay ? "mt-technique" : "principle") + '" aria-label="Add skill">' + icon("plus") + '</button></div>' +
           '<div style="margin-top:14px;"><div class="tiny">' + esc(title) + ' readiness</div><div style="font-size:34px;font-weight:900;margin-top:5px;">' + readiness.score + '%</div><div class="subtext">' + esc(readiness.sub) + '</div></div>' +
           '<div class="grid-3" style="margin-top:15px;">' +
-            miniStat("Today", isMuay ? num(dayRecord().muayThaiReps) : num(dayRecord().skillReps), "reps", isMuay ? "var(--red-soft)" : "var(--cyan)") +
+            miniStat("Today", isMuay ? num(dayRecord().muayThaiReps) : num(dayRecord().skillReps), "points", isMuay ? "var(--red-soft)" : "var(--cyan)") +
             miniStat("Principles", isMuay ? state.muayThaiPrinciples.length : state.principles.length, "items", "var(--green)") +
             miniStat(isMuay ? "Techniques" : "Combatives", isMuay ? state.muayThaiTechniques.length : state.combatives.length, "items", "var(--red-soft)") +
           '</div>' +
@@ -1778,7 +2137,7 @@
       var solo = soloBadge(item.solo);
       var isTechnique = item.kind === "combative" || item.kind === "mt-technique";
       var isMuay = item.kind.indexOf("mt-") === 0;
-      var sub = isTechnique ? item.position + " - " + item.reps + " reps" : t.label + " - " + item.reps + " reps";
+      var sub = isTechnique ? item.position + " - " + item.reps + " / 1000 points" : t.label + " - " + item.reps + " / 1000 points";
       return '<article class="skill-card">' +
         '<button class="skill-head" type="button" data-action="toggle-skill" data-id="' + attr(id) + '">' +
           '<div class="skill-id ' + (isTechnique ? "green" : "") + '">' + (isTechnique ? "L" + esc(item.lesson || item.id) : esc(item.id)) + '</div>' +
@@ -1790,8 +2149,8 @@
           '<div><div class="tiny">' + (isTechnique ? "Sequence" : "Why") + '</div><p class="body-copy" style="margin:5px 0 0;">' + esc(isTechnique ? item.steps : item.why) + '</p></div>' +
           '<div><div class="tiny">' + (isTechnique ? "Key detail" : "How") + '</div><p class="body-copy" style="margin:5px 0 0;">' + esc(isTechnique ? item.key : item.how) + '</p></div>' +
           (item.notes ? '<div><div class="tiny">Notes</div><p class="body-copy" style="margin:5px 0 0;">' + esc(item.notes) + '</p></div>' : "") +
-          '<div class="progress-bar ' + (isMuay ? "red" : isTechnique ? "green" : "") + '"><span style="width:' + t.bar + '%"></span></div>' +
-          '<div class="row"><span class="subtext">Next: ' + esc(t.next) + '</span><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn small ghost" type="button" data-action="favorite-skill" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '">' + (item.favorite ? "Saved" : "Save") + '</button><button class="btn small cyan" type="button" data-action="add-skill-reps" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '" data-amount="5">+5</button><button class="btn small cyan" type="button" data-action="add-skill-reps" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '" data-amount="25">+25</button><button class="btn small ghost" type="button" data-action="open-skill" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '">' + icon("edit") + 'Edit</button></div></div>' +
+          '<div><div class="row"><span class="subtext">' + esc(item.reps) + ' / 1000 points</span><span class="subtext">' + t.bar + '%</span></div><div class="progress-bar ' + (isMuay ? "red" : isTechnique ? "green" : "") + '" style="margin-top:6px;"><span style="width:' + t.bar + '%"></span></div></div>' +
+          '<div class="row"><span class="subtext">1 completion = 1 point. Next: ' + esc(t.next) + '</span><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;"><button class="btn small ghost" type="button" data-action="favorite-skill" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '">' + (item.favorite ? "Saved" : "Save") + '</button><button class="btn small cyan" type="button" data-action="add-skill-reps" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '" data-amount="1">' + icon("check") + 'Complete +1</button><button class="btn small ghost" type="button" data-action="open-skill" data-kind="' + attr(item.kind) + '" data-id="' + attr(item.id) + '">' + icon("edit") + 'Edit</button></div></div>' +
         '</div>' : "") +
       '</article>';
     }
@@ -1834,11 +2193,11 @@
       }
       if (filter === "bjj") {
         var bjj = bjjReadiness();
-        return '<section class="card hero-card pad"><div class="tiny">Jiu-Jitsu</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + bjj.score + '%</div><div class="subtext">' + esc(bjj.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge cyan">' + totalSkillReps("bjj").toLocaleString() + ' reps</span><span class="badge">' + progressSessions("bjj").length + ' sessions</span></div></section>';
+        return '<section class="card hero-card pad"><div class="tiny">Jiu-Jitsu</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + bjj.score + '%</div><div class="subtext">' + esc(bjj.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge cyan">' + totalSkillReps("bjj").toLocaleString() + ' points</span><span class="badge">' + progressSessions("bjj").length + ' sessions</span></div></section>';
       }
       if (filter === "muay") {
         var mt = muayThaiReadiness();
-        return '<section class="card hero-card pad"><div class="tiny">Muay Thai</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + mt.score + '%</div><div class="subtext">' + esc(mt.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge red">' + totalSkillReps("muay").toLocaleString() + ' reps</span><span class="badge">' + progressSessions("muay").length + ' sessions</span></div></section>';
+        return '<section class="card hero-card pad"><div class="tiny">Muay Thai</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + mt.score + '%</div><div class="subtext">' + esc(mt.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge red">' + totalSkillReps("muay").toLocaleString() + ' points</span><span class="badge">' + progressSessions("muay").length + ' sessions</span></div></section>';
       }
       if (filter === "soccer") {
         return '<section class="card hero-card pad"><div class="tiny">Soccer</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + soccerReadiness() + '%</div><div class="subtext">' + esc(soccerReadinessText()) + '</div><div class="chips" style="margin-top:14px;"><span class="badge green">' + num(dayRecord().soccerMinutes) + ' min today</span><span class="badge">' + state.soccerSessions.length + ' sessions</span></div></section>';
@@ -1862,8 +2221,8 @@
       if (filter === "bjj") {
         var bjj = bjjReadiness();
         return '<section class="grid-2">' +
-          metricPanel("Today", num(dayRecord().skillReps), "reps", "BJJ reps logged today", "") +
-          metricPanel("Total Reps", totalSkillReps("bjj").toLocaleString(), "reps", "Principles and combatives", "") +
+          metricPanel("Today", num(dayRecord().skillReps), "points", "BJJ points logged today", "") +
+          metricPanel("Total Points", totalSkillReps("bjj").toLocaleString(), "points", "Principles and combatives", "") +
           metricPanel("Principles", state.principles.filter(function (x) { return num(x.reps) >= 500; }).length, "functional", bjj.sub, "") +
           metricPanel("Combatives", state.combatives.filter(function (x) { return num(x.reps) >= 250; }).length, "familiar", "Gracie combatives tracked", "") +
         '</section>';
@@ -1871,8 +2230,8 @@
       if (filter === "muay") {
         var mt = muayThaiReadiness();
         return '<section class="grid-2">' +
-          metricPanel("Today", num(dayRecord().muayThaiReps), "reps", "Muay Thai reps logged today", "") +
-          metricPanel("Total Reps", totalSkillReps("muay").toLocaleString(), "reps", "Principles and techniques", "") +
+          metricPanel("Today", num(dayRecord().muayThaiReps), "points", "Muay Thai points logged today", "") +
+          metricPanel("Total Points", totalSkillReps("muay").toLocaleString(), "points", "Principles and techniques", "") +
           metricPanel("Principles", state.muayThaiPrinciples.filter(function (x) { return num(x.reps) >= 250; }).length, "sharp", mt.sub, "") +
           metricPanel("Techniques", state.muayThaiTechniques.filter(function (x) { return num(x.reps) >= 250; }).length, "drilled", "Striking and clinch work", "") +
         '</section>';
@@ -2057,7 +2416,7 @@
         '<div class="section-title">Edit app</div>' +
         '<section class="stack">' +
           toolRow("Profile", "Name, stats, belt, notes.", "open-profile", "edit") +
-          toolRow("Daily targets", "Steps, water, protein, skill reps, sleep.", "open-targets", "target") +
+          toolRow("Daily targets", "Steps, water cups, creatine, protein, skill points.", "open-targets", "target") +
           toolRow("New workout", "Create a new editable training template.", "open-template", "plus") +
           toolRow("New BJJ principle", "Add your own jiu-jitsu concept.", "open-skill", "plus", ' data-kind="principle"') +
           toolRow("New BJJ combative", "Add a drill, escape, or technique.", "open-skill", "plus", ' data-kind="combative"') +
@@ -2111,8 +2470,10 @@
         if (btn.dataset.filterType === "soccer") ui.soccerFilter = btn.dataset.value;
         render(); return;
       }
+      if (action === "set-workout-view") { ui.workoutView = btn.dataset.view || "week"; render(); return; }
       if (action === "set-skill-discipline") { ui.skillDiscipline = btn.dataset.discipline; ui.skillFilter = "all"; ui.skillSearch = ""; render(); return; }
       if (action === "back-skills") { ui.skillDiscipline = ""; ui.skillFilter = "all"; ui.skillSearch = ""; render(); return; }
+      if (action === "habit-step") { addHabitAmount(btn.dataset.metric, num(btn.dataset.amount)); return; }
       if (action === "toggle-habit") {
         var rec = dayRecord();
         rec.habits[btn.dataset.id] = !rec.habits[btn.dataset.id];
@@ -2162,6 +2523,14 @@
       if (input) {
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
+      }
+    });
+
+    document.addEventListener("change", function (event) {
+      if (event.target && event.target.matches("[data-set-check]")) {
+        var row = event.target.closest("[data-set-row]");
+        if (row) row.classList.toggle("done", event.target.checked);
+        updateWorkoutProgress();
       }
     });
 
@@ -2261,10 +2630,11 @@
       } else if (type === "sleep") {
         body = '<div class="field-row">' + field("Sleep hours", "sleep", rec.metrics.sleep || "", "number", 'step="0.1" inputmode="decimal"') + field("Soreness 1-5", "soreness", rec.metrics.soreness || "", "number", 'min="1" max="5" step="1" inputmode="numeric"') + '</div>';
       } else if (type === "skill") {
-        body = '<div class="field-row">' + field("BJJ reps", "skillReps", "", "number", 'step="5" inputmode="numeric"') + field("Muay Thai reps", "muayThaiReps", "", "number", 'step="5" inputmode="numeric"') + '</div>';
+        body = '<div class="field-row">' + field("BJJ points", "skillReps", "", "number", 'step="1" inputmode="numeric"') + field("Muay Thai points", "muayThaiReps", "", "number", 'step="1" inputmode="numeric"') + '</div>';
       } else {
-        body = '<div class="field-row">' + field("Water (L)", "water", rec.metrics.water || "", "number", 'step="0.1" inputmode="decimal"') + field("Protein (g)", "protein", rec.metrics.protein || "", "number", 'step="1" inputmode="numeric"') + '</div>' +
-          field("Steps", "steps", rec.metrics.steps || "", "number", 'step="100" inputmode="numeric"');
+        body = '<div class="field-row">' + field("Water cups", "water", rec.metrics.water || "", "number", 'step="1" inputmode="numeric"') + field("Creatine (g)", "creatine", rec.metrics.creatine || "", "number", 'step="1" inputmode="numeric"') + '</div>' +
+          '<div class="field-row">' + field("Protein (g)", "protein", rec.metrics.protein || "", "number", 'step="1" inputmode="numeric"') + field("Steps", "steps", rec.metrics.steps || "", "number", 'step="100" inputmode="numeric"') + '</div>' +
+          '<div class="field-row">' + field("Mobility minutes", "mobility", rec.metrics.mobility || "", "number", 'step="5" inputmode="numeric"') + field("Meditation minutes", "meditation", rec.metrics.meditation || "", "number", 'step="5" inputmode="numeric"') + '</div>';
       }
       openModal("Quick log", body, null, 'data-form="quick" data-type="' + attr(type) + '"');
     }
@@ -2282,13 +2652,20 @@
       }
       if (data.skillReps !== undefined && data.skillReps !== "") rec.skillReps = num(rec.skillReps) + num(data.skillReps);
       if (data.muayThaiReps !== undefined && data.muayThaiReps !== "") rec.muayThaiReps = num(rec.muayThaiReps) + num(data.muayThaiReps);
-      ["sleep","soreness","steps","water","protein"].forEach(function (key) {
+      ["sleep","soreness","steps","water","protein","creatine","mobility","meditation"].forEach(function (key) {
         if (data[key] !== undefined) rec.metrics[key] = data[key] === "" ? "" : num(data[key]);
       });
-      if (num(rec.metrics.water) >= num(state.targets.water)) rec.habits.water = true;
-      if (num(rec.metrics.protein) >= num(state.targets.protein)) rec.habits.protein = true;
-      if (num(rec.metrics.steps) >= num(state.targets.steps)) rec.habits.steps = true;
+      updateHabitCompletion(rec);
       persist(); closeModal(); render();
+    }
+    function addHabitAmount(metric, amount) {
+      var rec = dayRecord();
+      if (!rec.metrics) rec.metrics = {};
+      var current = num(rec.metrics[metric]);
+      rec.metrics[metric] = Math.max(0, current + amount);
+      updateHabitCompletion(rec);
+      persist();
+      render();
     }
     function openDailyNote() {
       var rec = dayRecord();
@@ -2299,8 +2676,9 @@
       persist(); closeModal(); render();
     }
     function openTargets() {
-      var body = '<div class="field-row">' + field("Steps", "steps", state.targets.steps, "number", 'step="100" inputmode="numeric"') + field("Water liters", "water", state.targets.water, "number", 'step="0.1" inputmode="decimal"') + '</div>' +
-        '<div class="field-row">' + field("Protein grams", "protein", state.targets.protein, "number", 'step="1" inputmode="numeric"') + field("Skill reps", "skill", state.targets.skill, "number", 'step="5" inputmode="numeric"') + '</div>' +
+      var body = '<div class="field-row">' + field("Steps", "steps", state.targets.steps, "number", 'step="100" inputmode="numeric"') + field("Water cups", "water", state.targets.water, "number", 'step="1" inputmode="numeric"') + '</div>' +
+        '<div class="field-row">' + field("Protein grams", "protein", state.targets.protein, "number", 'step="1" inputmode="numeric"') + field("Creatine grams", "creatine", state.targets.creatine, "number", 'step="1" inputmode="numeric"') + '</div>' +
+        field("Skill points", "skill", state.targets.skill, "number", 'step="1" inputmode="numeric"') +
         field("Sleep hours", "sleep", state.targets.sleep, "number", 'step="0.1" inputmode="decimal"');
       openModal("Daily targets", body, null, 'data-form="targets"');
     }
@@ -2308,31 +2686,37 @@
       state.targets.steps = num(data.steps, state.targets.steps);
       state.targets.water = num(data.water, state.targets.water);
       state.targets.protein = num(data.protein, state.targets.protein);
+      state.targets.creatine = num(data.creatine, state.targets.creatine);
       state.targets.skill = num(data.skill, state.targets.skill);
       state.targets.sleep = num(data.sleep, state.targets.sleep);
       persist(); closeModal(); render();
     }
 
     function openTemplate(id) {
-      var t = state.templates.find(function (x) { return x.id === id; }) || { id: "", name: "", type: "Lift", day: dayCode(), duration: 45, rpe: 7, focus: "", exercises: [] };
+      var t = state.templates.find(function (x) { return x.id === id; }) || { id: "", name: "", type: "Lift", day: dayCode(), duration: 45, rpe: 7, focus: "", warmup: [], exercises: [], cooldown: [], stretch: [] };
       normalizeTemplate(t);
       var warmupLines = (t.warmup || []).map(function (e) {
-        return [e.name, e.sets, e.reps, e.weight, e.rest, e.note].join(" | ");
+        return exerciseLine(e);
       }).join("\n");
       var lines = (t.exercises || []).map(function (e) {
-        return [e.name, e.sets, e.reps, e.weight, e.rest, e.note].join(" | ");
+        return exerciseLine(e);
       }).join("\n");
       var cooldownLines = (t.cooldown || []).map(function (e) {
-        return [e.name, e.sets, e.reps, e.weight, e.rest, e.note].join(" | ");
+        return exerciseLine(e);
       }).join("\n");
+      var stretchLines = (t.stretch || []).map(function (e) {
+        return exerciseLine(e);
+      }).join("\n");
+      var format = "Name | sets | reps/time | weight | rest sec | equipment | how to do it | tips";
       var body = field("Workout name", "name", t.name) +
         '<div class="field-row three">' + selectField("Type", "type", t.type, ["Lift","Combat","Recovery"]) + selectField("Day", "day", t.day, ["MON","TUE","WED","THU","FRI","SAT","SUN"]) + field("RPE", "rpe", t.rpe, "number", 'min="1" max="10" step="1"') + '</div>' +
         '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1" inputmode="numeric"') + field("ID", "id", t.id || uid("template"), "text", id ? "readonly" : "") + '</div>' +
         area("Focus", "focus", t.focus) +
-        area("Warmup", "warmup", warmupLines, 'placeholder="Name | sets | reps | weight | rest seconds | note"') +
-        area("Exercises", "exercises", lines, 'placeholder="Name | sets | reps | weight | rest seconds | note"') +
-        area("Cooldown", "cooldown", cooldownLines, 'placeholder="Name | sets | reps | weight | rest seconds | note"') +
-        '<p class="subtext">One exercise per line. Example: Back Squat | 5 | 3-5 | 275 | 150 | Brace hard.</p>';
+        area("Warmup", "warmup", warmupLines, 'placeholder="' + attr(format) + '"') +
+        area("Main exercises", "exercises", lines, 'placeholder="' + attr(format) + '"') +
+        area("Cooldown", "cooldown", cooldownLines, 'placeholder="' + attr(format) + '"') +
+        area("Stretch", "stretch", stretchLines, 'placeholder="' + attr(format) + '"') +
+        '<p class="subtext">One move per line. Format: ' + esc(format) + '</p>';
       var footer = '<button class="btn ghost" type="button" data-action="close-modal">Cancel</button><button class="btn primary" type="submit">' + icon("save") + 'Save</button>';
       if (id) footer = '<button class="btn danger" type="button" data-action="delete-template" data-id="' + attr(id) + '">Delete</button><button class="btn primary" type="submit">' + icon("save") + 'Save</button>';
       openModal(id ? "Edit workout" : "New workout", body, { html: footer }, 'data-form="template" data-id="' + attr(id || "") + '"');
@@ -2353,7 +2737,8 @@
         focus: data.focus || "",
         warmup: parseExercises(data.warmup || ""),
         exercises: parseExercises(data.exercises || ""),
-        cooldown: parseExercises(data.cooldown || "")
+        cooldown: parseExercises(data.cooldown || ""),
+        stretch: parseExercises(data.stretch || "")
       };
       var idx = state.templates.findIndex(function (t) { return t.id === oldId || t.id === template.id; });
       if (idx >= 0) state.templates[idx] = template;
@@ -2364,8 +2749,12 @@
       return String(text || "").split(/\n+/).map(function (line) {
         var p = line.split("|").map(function (x) { return x.trim(); });
         if (!p[0]) return null;
-        return ex(p[0], num(p[1], 3), p[2] || "8-12", num(p[3], 0), num(p[4], 60), p[5] || "");
+        var oldFormat = p.length === 6;
+        return ex(p[0], num(p[1], 3), p[2] || "8-12", num(p[3], 0), num(p[4], 60), oldFormat ? p[5] : "", oldFormat ? "" : (p[5] || ""), oldFormat ? p[5] : (p[6] || ""), p[7] || "");
       }).filter(Boolean);
+    }
+    function exerciseLine(e) {
+      return [e.name, e.sets, e.reps, e.weight, e.rest, e.equipment || "", e.how || e.note || "", e.tips || ""].join(" | ");
     }
     function duplicateTemplate(id) {
       var t = state.templates.find(function (x) { return x.id === id; });
@@ -2388,29 +2777,71 @@
       normalizeTemplate(t);
       var plan = workoutPlan(t);
       var index = 0;
+      var totalSets = 0;
       var rows = plan.map(function (section) {
         var sectionRows = section.items.map(function (e) {
           var i = index;
           var stepNum = index + 1;
+          var setCount = setCountFor(e);
+          totalSets += setCount;
           index++;
-          return '<div class="workout-step">' +
-            '<div class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div>' + (e.note ? '<div class="body-copy" style="margin-top:7px;">' + esc(e.note) + '</div>' : '') + '</div></div><span class="badge">' + esc(section.label) + '</span></div>' +
-            '<div class="row" style="margin-top:12px;"><label class="done-toggle"><input type="checkbox" name="done_' + i + '" value="1" checked><span>Done</span></label><span class="subtext">Step ' + stepNum + '</span></div>' +
-            '<details class="workout-log"><summary>Log details</summary><div class="field-row three" style="margin-top:10px;">' + field("Sets", "sets_" + i, e.sets, "number", 'min="0" step="1"') + field("Reps", "reps_" + i, parseInt(e.reps, 10) || "", "number", 'min="0" step="1"') + field("Weight", "weight_" + i, e.weight, "number", 'step="0.5"') + '</div></details>' +
-            '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(section.label) + '">' +
-          '</div>';
+          return renderWorkoutExercise(section.label, e, i, stepNum, setCount);
         }).join("");
         return '<div class="section-title" style="margin-top:14px;">' + esc(section.label) + '</div>' + sectionRows;
       }).join("");
       return '<div class="tab-view workout-page">' +
-        '<div class="workout-top"><div class="row"><button class="btn small ghost" type="button" data-action="exit-workout">Back</button><span class="badge ' + (t.type === "Lift" ? "red" : t.type === "Combat" ? "cyan" : "green") + '">' + esc(t.type) + '</span></div><h1 class="hero-title" style="margin:12px 0 5px;">' + esc(t.name) + '</h1><div class="subtext">' + esc(t.focus) + '</div></div>' +
+        '<div class="workout-top"><div class="row"><button class="btn small ghost" type="button" data-action="exit-workout">Back</button><span class="workout-progress-text" id="workoutProgress">0 / ' + totalSets + ' sets</span></div><h1 class="hero-title" style="margin:12px 0 5px;">' + esc(t.name) + '</h1><div class="subtext">' + esc(t.focus) + '</div></div>' +
         '<form data-form="session" data-id="' + attr(id) + '">' +
-        '<section class="card pad"><p class="body-copy" style="margin-top:0;">Follow this top to bottom. Leave a step checked if you did it. Open Log details only when you want to change sets, reps, or load.</p>' +
+        '<section class="card pad"><p class="body-copy" style="margin-top:0;">Check each set after you finish it. Edit reps and weight to what you actually did.</p>' +
         '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1"') + field("Date", "date", todayKey(), "date") + '</div></section>' +
         '<input type="hidden" name="count" value="' + index + '">' +
         '<div style="margin-top:12px;">' + rows + '</div>' +
         '<section class="card pad" style="margin-top:12px;">' + area("Session notes", "notes", "", 'placeholder="What changed? What should you do next time?"') + '<button class="btn primary full" type="submit" style="margin-top:12px;">' + icon("save") + 'Save Workout</button></section>' +
         '</form></div>';
+    }
+
+    function renderWorkoutExercise(phase, e, i, stepNum, setCount) {
+      var setRows = [];
+      for (var s = 0; s < setCount; s++) setRows.push(renderSetRow(i, s, e));
+      return '<div class="workout-step">' +
+        '<div class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div></div></div><span class="badge">' + esc(phase) + '</span></div>' +
+        '<div class="exercise-guide"><div><div class="tiny">Equipment</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.equipment) + '</p></div><div><div class="tiny">How</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.how) + '</p></div><div><div class="tiny">Tips</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.tips || e.note) + '</p></div></div>' +
+        '<div class="set-table">' + setRows.join("") + '</div>' +
+        '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(phase) + '"><input type="hidden" name="setcount_' + i + '" value="' + setCount + '">' +
+      '</div>';
+    }
+
+    function renderSetRow(exerciseIndex, setIndex, e) {
+      var label = setIndex + 1;
+      var reps = repValueForSet(e.reps, setIndex);
+      return '<div class="set-row" data-set-row><label class="set-check"><input type="checkbox" data-set-check name="done_' + exerciseIndex + '_' + setIndex + '" value="1"><span>Set ' + label + '</span></label>' +
+        field("Reps", "reps_" + exerciseIndex + "_" + setIndex, reps, "text", 'inputmode="numeric"') +
+        field("Weight", "weight_" + exerciseIndex + "_" + setIndex, e.weight || "", "number", 'step="0.5" inputmode="decimal"') +
+      '</div>';
+    }
+
+    function setCountFor(e) {
+      return Math.max(1, Math.round(num(e.sets, 1)));
+    }
+
+    function repValueForSet(reps, index) {
+      var text = String(reps || "");
+      if (text.indexOf("/") >= 0) {
+        var parts = text.split("/").map(function (p) { return p.trim(); });
+        return parts[index] || parts[parts.length - 1] || "";
+      }
+      var range = text.match(/(\d+)\s*-\s*(\d+)/);
+      if (range) return range[2];
+      var single = text.match(/\d+/);
+      return single ? single[0] : text;
+    }
+
+    function updateWorkoutProgress() {
+      var marker = document.getElementById("workoutProgress");
+      if (!marker) return;
+      var boxes = Array.from(document.querySelectorAll("[data-set-check]"));
+      var done = boxes.filter(function (box) { return box.checked; }).length;
+      marker.textContent = done + " / " + boxes.length + " sets";
     }
 
     function openSession(id) {
@@ -2427,7 +2858,8 @@
       return [
         { label: "Warmup", items: template.warmup || [] },
         { label: "Main Work", items: template.exercises || [] },
-        { label: "Cooldown", items: template.cooldown || [] }
+        { label: "Cooldown", items: template.cooldown || [] },
+        { label: "Stretch", items: template.stretch || [] }
       ].filter(function (section) { return section.items.length; });
     }
     function saveSession(data, templateId) {
@@ -2437,15 +2869,28 @@
       var exercises = [];
       var volume = 0;
       for (var i = 0; i < count; i++) {
-        if (data["done_" + i] !== "1") continue;
         var name = data["name_" + i];
         var phase = data["phase_" + i] || "Main Work";
-        var sets = num(data["sets_" + i]);
-        var reps = num(data["reps_" + i]);
-        var weight = num(data["weight_" + i]);
-        volume += sets * reps * weight;
-        exercises.push({ name: name, phase: phase, sets: sets, reps: reps, weight: weight });
-        if (weight > 0) updatePR(name, weight, "lb", data.date || todayKey());
+        var setCount = num(data["setcount_" + i], 1);
+        var setLogs = [];
+        for (var s = 0; s < setCount; s++) {
+          if (data["done_" + i + "_" + s] !== "1") continue;
+          var reps = data["reps_" + i + "_" + s] || "";
+          var weight = num(data["weight_" + i + "_" + s]);
+          var repNumber = num(reps);
+          volume += repNumber * weight;
+          setLogs.push({ set: s + 1, reps: reps, weight: weight });
+          if (weight > 0) updatePR(name, weight, "lb", data.date || todayKey());
+        }
+        if (!setLogs.length) continue;
+        exercises.push({
+          name: name,
+          phase: phase,
+          sets: setLogs.length,
+          reps: setLogs.map(function (set) { return set.reps; }).join(", "),
+          weight: Math.max.apply(null, setLogs.map(function (set) { return num(set.weight); })),
+          setLogs: setLogs
+        });
       }
       var session = {
         id: uid("session"),
@@ -2575,8 +3020,8 @@
           { id: nextSkillId(list), name: "", solo: "yes", what: "", why: "", how: "", reps: 0, favorite: false, notes: "" };
       }
       var body = isCombative
-        ? field("Lesson", "id", item.lesson || item.id, "number") + field(isMuayPrinciple ? "Category" : "Name", "name", item.name) + '<div class="field-row">' + field(kind === "mt-technique" ? "Category" : "Position", "position", item.position) + selectField("Training type", "solo", item.solo, ["solo","dummy","partner","partial"]) + '</div>' + field("Reps", "reps", item.reps, "number") + area("Purpose", "purpose", item.purpose) + area("Sequence", "steps", item.steps) + area("Key detail", "key", item.key) + area("Notes", "notes", item.notes)
-        : field("ID", "id", item.id, "number") + field("Name", "name", item.name) + '<div class="field-row">' + selectField("Training type", "solo", item.solo, ["yes","partial","solo","dummy","partner"]) + field("Reps", "reps", item.reps, "number") + '</div>' + area("What", "what", item.what) + area("Why", "why", item.why) + area("How", "how", item.how) + area("Notes", "notes", item.notes);
+        ? field("Lesson", "id", item.lesson || item.id, "number") + field(isMuayPrinciple ? "Category" : "Name", "name", item.name) + '<div class="field-row">' + field(kind === "mt-technique" ? "Category" : "Position", "position", item.position) + selectField("Training type", "solo", item.solo, ["solo","dummy","partner","partial"]) + '</div>' + field("Points", "reps", item.reps, "number") + area("Purpose", "purpose", item.purpose) + area("Sequence", "steps", item.steps) + area("Key detail", "key", item.key) + area("Notes", "notes", item.notes)
+        : field("ID", "id", item.id, "number") + field("Name", "name", item.name) + '<div class="field-row">' + selectField("Training type", "solo", item.solo, ["yes","partial","solo","dummy","partner"]) + field("Points", "reps", item.reps, "number") + '</div>' + area("What", "what", item.what) + area("Why", "why", item.why) + area("How", "how", item.how) + area("Notes", "notes", item.notes);
       body += '<label class="habit-row" style="border-top:0;padding:8px 0 0;"><input type="checkbox" name="favorite" value="1" ' + (item.favorite ? "checked" : "") + ' style="width:20px;height:20px;"> <span class="habit-label">Favorite</span></label>';
       openModal(id ? "Edit skill" : "New skill", body, null, 'data-form="skill" data-kind="' + attr(kind) + '" data-id="' + attr(id || "") + '"');
     }
@@ -2658,7 +3103,7 @@
       render();
     }
     function confirmResetProgress() {
-      var body = '<p class="body-copy">This clears workout sessions, soccer sessions, PRs, body measurements, skill reps, and drill minutes. It keeps your app setup, templates, targets, profile, and photos.</p>' + field('Type PROGRESS to confirm', 'confirm', '');
+      var body = '<p class="body-copy">This clears workout sessions, soccer sessions, PRs, body measurements, skill points, and drill minutes. It keeps your app setup, templates, targets, profile, and photos.</p>' + field('Type PROGRESS to confirm', 'confirm', '');
       openModal("Reset Progress", body, { html: '<button class="btn ghost" type="button" data-action="close-modal">Cancel</button><button class="btn danger" type="submit">' + icon("trash") + 'Reset Progress</button>' }, 'data-form="reset-progress"');
     }
     function resetProgress(data) {
