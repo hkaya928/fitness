@@ -181,7 +181,7 @@
       z-index: 9;
       flex-shrink: 0;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 2px;
       padding: 8px 6px calc(8px + var(--safe-bottom));
       background: rgba(0,0,0,.74);
@@ -522,6 +522,39 @@
       list-style: none;
     }
     .workout-log summary::-webkit-details-marker { display: none; }
+    .workout-page {
+      padding-bottom: 20px;
+    }
+    .workout-top {
+      position: sticky;
+      top: -18px;
+      z-index: 5;
+      margin: -18px -16px 14px;
+      padding: 14px 16px 12px;
+      background: rgba(0,0,0,.82);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .done-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .done-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+    }
 
     .search {
       width: 100%;
@@ -834,9 +867,6 @@
       <button class="nav-btn" type="button" data-action="set-tab" data-tab="progress" aria-label="Progress">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-8"/></svg><span>Progress</span>
       </button>
-      <button class="nav-btn" type="button" data-action="set-tab" data-tab="soccer" aria-label="Soccer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 5h-5L8 10l4-3z"/><path d="M12 7V3M16 10l4-2M14.5 15l2.5 4M9.5 15L7 19M8 10L4 8"/></svg><span>Soccer</span>
-      </button>
       <button class="nav-btn" type="button" data-action="set-tab" data-tab="me" aria-label="Me">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.2-6 8-6s6.5 2 8 6"/></svg><span>Me</span>
       </button>
@@ -864,6 +894,7 @@
       progressFilter: "overall",
       trainSearch: "",
       skillSearch: "",
+      activeWorkoutId: "",
       expanded: {}
     };
 
@@ -1472,6 +1503,10 @@
 
     function render() {
       ensureToday();
+      if (ui.tab === "soccer") {
+        ui.tab = "skills";
+        ui.skillDiscipline = "soccer";
+      }
       document.getElementById("brandSub").textContent = fmtLongDate(new Date()) + " - " + dayCode();
       document.getElementById("streakCount").textContent = String(streak());
       document.getElementById("avatar").textContent = (state.profile.initials || initials(state.profile.name)).slice(0, 3).toUpperCase();
@@ -1479,11 +1514,11 @@
         btn.setAttribute("aria-current", btn.dataset.tab === ui.tab ? "page" : "false");
       });
       var html = storageOK ? "" : '<div class="storage-warning">Phone storage is not available in this browser mode. Export backups often until storage is enabled.</div>';
+      if (ui.tab === "workout") html += renderWorkout();
       if (ui.tab === "today") html += renderToday();
       if (ui.tab === "train") html += renderTrain();
       if (ui.tab === "skills") html += renderSkills();
       if (ui.tab === "progress") html += renderProgress();
-      if (ui.tab === "soccer") html += renderSoccer();
       if (ui.tab === "me") html += renderMe();
       view.innerHTML = html;
     }
@@ -1662,14 +1697,19 @@
           '<section class="stack">' +
             renderDisciplineCard("bjj", "Jiu-Jitsu", "Principles + Gracie combatives", bjj.score, bjj.sub, "cyan") +
             renderDisciplineCard("muay", "Muay Thai", "Principles + striking techniques", mt.score, mt.sub, "red") +
+            renderDisciplineCard("soccer", "Soccer", "Touch + passing + finishing", soccerReadiness(), soccerReadinessText(), "green") +
           '</section>' +
           '<div class="section-title">Today</div>' +
           '<section class="grid-2">' +
             miniStat("BJJ", num(dayRecord().skillReps), "reps", "var(--cyan)") +
             miniStat("Muay Thai", num(dayRecord().muayThaiReps), "reps", "var(--red-soft)") +
+            miniStat("Soccer", num(dayRecord().soccerMinutes), "min", "var(--green)") +
+            miniStat("Skill Total", num(dayRecord().skillReps) + num(dayRecord().muayThaiReps), "reps", "#fff") +
           '</section>' +
         '</div>';
       }
+
+      if (ui.skillDiscipline === "soccer") return renderSoccer();
 
       var isMuay = ui.skillDiscipline === "muay";
       var all = [];
@@ -1770,18 +1810,10 @@
       var filteredSessions = progressSessions(ui.progressFilter);
       return '<div class="tab-view">' +
         '<h1 class="hero-title">Progress</h1>' +
-        '<section class="card hero-card pad">' +
-          '<div class="tiny">Overall</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + overallReadiness() + '%</div>' +
-          '<div class="subtext">Combined consistency, strength work, BJJ, Muay Thai, soccer, and body trend.</div>' +
-          '<div class="heatmap" style="margin-top:14px;">' + heat + '</div>' +
-        '</section>' +
+        progressHero(ui.progressFilter, weekVolume, heat) +
         '<div style="margin-top:12px;">' + renderChips("progress", [["overall","Overall"],["lift","Weights"],["bjj","BJJ"],["muay","Muay Thai"],["soccer","Soccer"]], ui.progressFilter) + '</div>' +
-        '<section class="grid-2">' +
-          metricPanel("Weight", m.weight || "-", "lb", measurementDelta("weight"), renderSpark("weight", "#34c759")) +
-          metricPanel("Body Fat", m.bodyFat || "-", "%", "Goal " + esc(state.profile.bodyFatGoal) + "%", "") +
-          metricPanel("Week Volume", Math.round(weekVolume).toLocaleString(), "lb", state.sessions.length + " total sessions", "") +
-          metricPanel("Streak", streak(), "days", "Activity on tracked days", "") +
-        '</section>' +
+        '<div class="row" style="margin:18px 4px 12px;"><div class="section-title" style="margin:0;">' + esc(progressTitle(ui.progressFilter)) + '</div><button class="btn small danger" type="button" data-action="confirm-reset-progress">' + icon("trash") + 'Reset</button></div>' +
+        renderProgressMetrics(ui.progressFilter, m, weekVolume) +
         '<div class="section-title">Discipline breakdown</div>' +
         '<section class="stack">' +
           renderProgressDiscipline("Weights", "lift", weightReadiness(), "Volume " + Math.round(weekVolume).toLocaleString() + " lb this week", "red") +
@@ -1789,11 +1821,77 @@
           renderProgressDiscipline("Muay Thai", "muay", muayThaiReadiness().score, muayThaiReadiness().sub, "red") +
           renderProgressDiscipline("Soccer", "soccer", soccerReadiness(), soccerReadinessText(), "green") +
         '</section>' +
-        '<div class="section-title">' + esc(progressTitle(ui.progressFilter)) + '</div>' +
+        '<div class="section-title">Recent ' + esc(progressTitle(ui.progressFilter).toLowerCase()) + '</div>' +
         '<section class="stack">' + (filteredSessions.length ? filteredSessions.slice(0, 8).map(renderSessionRow).join("") : '<div class="empty">No sessions yet for this view.</div>') + '</section>' +
         '<div class="section-title">Personal records</div>' +
         '<section class="stack">' + Object.keys(state.prs).sort().map(renderPRRow).join("") + '</section>' +
       '</div>';
+    }
+
+    function progressHero(filter, weekVolume, heat) {
+      if (filter === "lift") {
+        return '<section class="card hero-card pad"><div class="tiny">Weights</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + weightReadiness() + '%</div><div class="subtext">Strength readiness based on recent lift frequency and this week\'s volume.</div><div class="chips" style="margin-top:14px;"><span class="badge red">' + Math.round(weekVolume).toLocaleString() + ' lb this week</span><span class="badge">' + progressSessions("lift").length + ' lift sessions</span></div></section>';
+      }
+      if (filter === "bjj") {
+        var bjj = bjjReadiness();
+        return '<section class="card hero-card pad"><div class="tiny">Jiu-Jitsu</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + bjj.score + '%</div><div class="subtext">' + esc(bjj.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge cyan">' + totalSkillReps("bjj").toLocaleString() + ' reps</span><span class="badge">' + progressSessions("bjj").length + ' sessions</span></div></section>';
+      }
+      if (filter === "muay") {
+        var mt = muayThaiReadiness();
+        return '<section class="card hero-card pad"><div class="tiny">Muay Thai</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + mt.score + '%</div><div class="subtext">' + esc(mt.sub) + '</div><div class="chips" style="margin-top:14px;"><span class="badge red">' + totalSkillReps("muay").toLocaleString() + ' reps</span><span class="badge">' + progressSessions("muay").length + ' sessions</span></div></section>';
+      }
+      if (filter === "soccer") {
+        return '<section class="card hero-card pad"><div class="tiny">Soccer</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + soccerReadiness() + '%</div><div class="subtext">' + esc(soccerReadinessText()) + '</div><div class="chips" style="margin-top:14px;"><span class="badge green">' + num(dayRecord().soccerMinutes) + ' min today</span><span class="badge">' + state.soccerSessions.length + ' sessions</span></div></section>';
+      }
+      return '<section class="card hero-card pad">' +
+        '<div class="tiny">Overall</div><div style="font-size:34px;font-weight:900;margin-top:6px;">' + overallReadiness() + '%</div>' +
+        '<div class="subtext">Combined consistency, strength work, BJJ, Muay Thai, soccer, and body trend.</div>' +
+        '<div class="heatmap" style="margin-top:14px;">' + heat + '</div>' +
+      '</section>';
+    }
+
+    function renderProgressMetrics(filter, m, weekVolume) {
+      if (filter === "lift") {
+        return '<section class="grid-2">' +
+          metricPanel("Week Volume", Math.round(weekVolume).toLocaleString(), "lb", state.sessions.filter(function (s) { return s.type === "Lift"; }).length + " total lift sessions", "") +
+          metricPanel("14 Day Lifts", state.sessions.filter(function (s) { return s.type === "Lift" && lastNDays(14).indexOf(s.date) >= 0; }).length, "sessions", "Target 8 in 14 days", "") +
+          metricPanel("Best PR", bestPRName(), "", bestPRText(), "") +
+          metricPanel("Streak", streak(), "days", "Activity on tracked days", "") +
+        '</section>';
+      }
+      if (filter === "bjj") {
+        var bjj = bjjReadiness();
+        return '<section class="grid-2">' +
+          metricPanel("Today", num(dayRecord().skillReps), "reps", "BJJ reps logged today", "") +
+          metricPanel("Total Reps", totalSkillReps("bjj").toLocaleString(), "reps", "Principles and combatives", "") +
+          metricPanel("Principles", state.principles.filter(function (x) { return num(x.reps) >= 500; }).length, "functional", bjj.sub, "") +
+          metricPanel("Combatives", state.combatives.filter(function (x) { return num(x.reps) >= 250; }).length, "familiar", "Gracie combatives tracked", "") +
+        '</section>';
+      }
+      if (filter === "muay") {
+        var mt = muayThaiReadiness();
+        return '<section class="grid-2">' +
+          metricPanel("Today", num(dayRecord().muayThaiReps), "reps", "Muay Thai reps logged today", "") +
+          metricPanel("Total Reps", totalSkillReps("muay").toLocaleString(), "reps", "Principles and techniques", "") +
+          metricPanel("Principles", state.muayThaiPrinciples.filter(function (x) { return num(x.reps) >= 250; }).length, "sharp", mt.sub, "") +
+          metricPanel("Techniques", state.muayThaiTechniques.filter(function (x) { return num(x.reps) >= 250; }).length, "drilled", "Striking and clinch work", "") +
+        '</section>';
+      }
+      if (filter === "soccer") {
+        var mins14 = state.soccerSessions.filter(function (s) { return lastNDays(14).indexOf(s.date) >= 0; }).reduce(function (sum, s) { return sum + num(s.minutes); }, 0);
+        return '<section class="grid-2">' +
+          metricPanel("Today", num(dayRecord().soccerMinutes), "min", "Soccer minutes logged today", "") +
+          metricPanel("14 Day Work", mins14, "min", "Target 180 minutes", "") +
+          metricPanel("Drills", state.soccerDrills.length, "items", "Touch, passing, finishing, defense", "") +
+          metricPanel("Sessions", state.soccerSessions.length, "logged", "Field work history", "") +
+        '</section>';
+      }
+      return '<section class="grid-2">' +
+        metricPanel("Weight", m.weight || "-", "lb", measurementDelta("weight"), renderSpark("weight", "#34c759")) +
+        metricPanel("Body Fat", m.bodyFat || "-", "%", "Goal " + esc(state.profile.bodyFatGoal) + "%", "") +
+        metricPanel("Week Volume", Math.round(weekVolume).toLocaleString(), "lb", state.sessions.length + " total sessions", "") +
+        metricPanel("Streak", streak(), "days", "Activity on tracked days", "") +
+      '</section>';
     }
 
     function renderProgressDiscipline(name, filter, score, sub, color) {
@@ -1847,6 +1945,23 @@
     function overallReadiness() {
       return Math.round((weightReadiness() + bjjReadiness().score + muayThaiReadiness().score + soccerReadiness()) / 4);
     }
+    function totalSkillReps(type) {
+      var lists = type === "muay" ? [state.muayThaiPrinciples, state.muayThaiTechniques] : [state.principles, state.combatives];
+      return lists.reduce(function (sum, list) {
+        return sum + list.reduce(function (inner, item) { return inner + num(item.reps); }, 0);
+      }, 0);
+    }
+    function bestPRName() {
+      var names = Object.keys(state.prs || {});
+      if (!names.length) return "-";
+      return names.sort(function (a, b) { return num(state.prs[b].value) - num(state.prs[a].value); })[0];
+    }
+    function bestPRText() {
+      var name = bestPRName();
+      if (name === "-") return "No PRs logged yet";
+      var pr = state.prs[name] || {};
+      return pr.value + " " + (pr.unit || "lb") + (pr.date ? " on " + pr.date : "");
+    }
     function metricPanel(label, value, unit, delta, spark) {
       return '<article class="card pad"><div class="tiny">' + esc(label) + '</div><div style="display:flex;align-items:baseline;gap:5px;margin-top:9px;"><span class="metric-value">' + esc(value) + '</span><span class="subtext">' + esc(unit) + '</span></div><div class="subtext" style="margin-top:6px;">' + esc(delta) + '</div>' + spark + '</article>';
     }
@@ -1893,7 +2008,8 @@
       var categories = [["all","All"],["touch","Touch"],["passing","Passing"],["dribbling","Dribbling"],["finishing","Finishing"],["defense","Defense"],["solo","Solo"],["favorite","Favorites"]];
       return '<div class="tab-view">' +
         '<section class="card cyan-hero pad">' +
-          '<div class="row"><div><div class="tiny">Soccer readiness</div><div style="font-size:34px;font-weight:900;margin-top:5px;">' + soccerReadiness() + '%</div><div class="subtext">' + esc(soccerReadinessText()) + '</div></div><button class="btn icon green" type="button" data-action="open-soccer-log" aria-label="Log soccer">' + icon("plus") + '</button></div>' +
+          '<div class="row"><button class="btn small ghost" type="button" data-action="back-skills">Back</button><button class="btn icon green" type="button" data-action="open-soccer-log" aria-label="Log soccer">' + icon("plus") + '</button></div>' +
+          '<div style="margin-top:14px;"><div class="tiny">Soccer readiness</div><div style="font-size:34px;font-weight:900;margin-top:5px;">' + soccerReadiness() + '%</div><div class="subtext">' + esc(soccerReadinessText()) + '</div></div>' +
           '<div class="grid-3" style="margin-top:15px;">' +
             miniStat("Today", num(rec.soccerMinutes), "min", "var(--green)") +
             miniStat("Drills", state.soccerDrills.length, "items", "var(--cyan)") +
@@ -2006,6 +2122,7 @@
       if (action === "open-daily-note") { openDailyNote(); return; }
       if (action === "open-targets") { openTargets(); return; }
       if (action === "start-template") { openSession(btn.dataset.id); return; }
+      if (action === "exit-workout") { ui.activeWorkoutId = ""; ui.tab = "today"; render(); return; }
       if (action === "open-template") { openTemplate(btn.dataset.id || null); return; }
       if (action === "duplicate-template") { duplicateTemplate(btn.dataset.id); return; }
       if (action === "toggle-skill") { ui.expanded[btn.dataset.id] = !ui.expanded[btn.dataset.id]; render(); return; }
@@ -2024,6 +2141,7 @@
       if (action === "export-data") { exportData(); return; }
       if (action === "import-data") { importFile.click(); return; }
       if (action === "confirm-reset") { confirmReset(); return; }
+      if (action === "confirm-reset-progress") { confirmResetProgress(); return; }
       if (action === "close-modal") { closeModal(); return; }
     });
 
@@ -2064,6 +2182,7 @@
       if (formType === "soccer-drill") saveSoccerDrill(data, form.dataset.id || null);
       if (formType === "profile") saveProfile(data);
       if (formType === "reset") resetApp(data);
+      if (formType === "reset-progress") resetProgress(data);
     });
 
     importFile.addEventListener("change", function () {
@@ -2258,9 +2377,14 @@
       persist(); render();
     }
 
-    function openSession(id) {
+    function renderWorkout() {
+      var id = ui.activeWorkoutId || todaysTemplate().id;
       var t = state.templates.find(function (x) { return x.id === id; });
-      if (!t) return;
+      if (!t) {
+        ui.tab = "today";
+        ui.activeWorkoutId = "";
+        return renderToday();
+      }
       normalizeTemplate(t);
       var plan = workoutPlan(t);
       var index = 0;
@@ -2271,18 +2395,31 @@
           index++;
           return '<div class="workout-step">' +
             '<div class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' - rest ' + esc(e.rest) + 's' : '') + '</div>' + (e.note ? '<div class="body-copy" style="margin-top:7px;">' + esc(e.note) + '</div>' : '') + '</div></div><span class="badge">' + esc(section.label) + '</span></div>' +
+            '<div class="row" style="margin-top:12px;"><label class="done-toggle"><input type="checkbox" name="done_' + i + '" value="1" checked><span>Done</span></label><span class="subtext">Step ' + stepNum + '</span></div>' +
             '<details class="workout-log"><summary>Log details</summary><div class="field-row three" style="margin-top:10px;">' + field("Sets", "sets_" + i, e.sets, "number", 'min="0" step="1"') + field("Reps", "reps_" + i, parseInt(e.reps, 10) || "", "number", 'min="0" step="1"') + field("Weight", "weight_" + i, e.weight, "number", 'step="0.5"') + '</div></details>' +
             '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(section.label) + '">' +
           '</div>';
         }).join("");
         return '<div class="section-title" style="margin-top:14px;">' + esc(section.label) + '</div>' + sectionRows;
       }).join("");
-      var body = '<p class="body-copy" style="margin-top:0;">Follow the order top to bottom. Open Log details only when you want to change sets, reps, or load.</p>' +
-        '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1"') + field("Date", "date", todayKey(), "date") + '</div>' +
+      return '<div class="tab-view workout-page">' +
+        '<div class="workout-top"><div class="row"><button class="btn small ghost" type="button" data-action="exit-workout">Back</button><span class="badge ' + (t.type === "Lift" ? "red" : t.type === "Combat" ? "cyan" : "green") + '">' + esc(t.type) + '</span></div><h1 class="hero-title" style="margin:12px 0 5px;">' + esc(t.name) + '</h1><div class="subtext">' + esc(t.focus) + '</div></div>' +
+        '<form data-form="session" data-id="' + attr(id) + '">' +
+        '<section class="card pad"><p class="body-copy" style="margin-top:0;">Follow this top to bottom. Leave a step checked if you did it. Open Log details only when you want to change sets, reps, or load.</p>' +
+        '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1"') + field("Date", "date", todayKey(), "date") + '</div></section>' +
         '<input type="hidden" name="count" value="' + index + '">' +
         '<div style="margin-top:12px;">' + rows + '</div>' +
-        area("Session notes", "notes", "", 'placeholder="What changed? What should you do next time?"');
-      openModal("Today's workout", body, null, 'data-form="session" data-id="' + attr(id) + '"');
+        '<section class="card pad" style="margin-top:12px;">' + area("Session notes", "notes", "", 'placeholder="What changed? What should you do next time?"') + '<button class="btn primary full" type="submit" style="margin-top:12px;">' + icon("save") + 'Save Workout</button></section>' +
+        '</form></div>';
+    }
+
+    function openSession(id) {
+      var t = state.templates.find(function (x) { return x.id === id; });
+      if (!t) return;
+      ui.activeWorkoutId = id;
+      ui.tab = "workout";
+      render();
+      view.scrollTop = 0;
     }
 
     function workoutPlan(template) {
@@ -2300,6 +2437,7 @@
       var exercises = [];
       var volume = 0;
       for (var i = 0; i < count; i++) {
+        if (data["done_" + i] !== "1") continue;
         var name = data["name_" + i];
         var phase = data["phase_" + i] || "Main Work";
         var sets = num(data["sets_" + i]);
@@ -2324,6 +2462,8 @@
       var rec = dayRecord(session.date);
       if (rec.completedTemplates.indexOf(templateId) < 0) rec.completedTemplates.push(templateId);
       rec.habits.mobility = rec.habits.mobility || t.type === "Recovery";
+      ui.activeWorkoutId = "";
+      if (ui.tab === "workout") ui.tab = "today";
       persist(); closeModal(); render();
     }
     function updatePR(name, value, unit, date) {
@@ -2513,6 +2653,32 @@
       if (String(data.confirm || "").trim().toUpperCase() !== "RESET") return;
       try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
       state = defaultState();
+      persist();
+      closeModal();
+      render();
+    }
+    function confirmResetProgress() {
+      var body = '<p class="body-copy">This clears workout sessions, soccer sessions, PRs, body measurements, skill reps, and drill minutes. It keeps your app setup, templates, targets, profile, and photos.</p>' + field('Type PROGRESS to confirm', 'confirm', '');
+      openModal("Reset Progress", body, { html: '<button class="btn ghost" type="button" data-action="close-modal">Cancel</button><button class="btn danger" type="submit">' + icon("trash") + 'Reset Progress</button>' }, 'data-form="reset-progress"');
+    }
+    function resetProgress(data) {
+      if (String(data.confirm || "").trim().toUpperCase() !== "PROGRESS") return;
+      state.sessions = [];
+      state.soccerSessions = [];
+      state.measurements = [];
+      state.prs = {};
+      [state.principles, state.combatives, state.muayThaiPrinciples, state.muayThaiTechniques].forEach(function (list) {
+        list.forEach(function (item) { item.reps = 0; });
+      });
+      state.soccerDrills.forEach(function (drill) { drill.minutes = 0; });
+      Object.keys(state.days || {}).forEach(function (date) {
+        var rec = state.days[date];
+        rec.skillReps = 0;
+        rec.muayThaiReps = 0;
+        rec.soccerMinutes = 0;
+        rec.completedTemplates = [];
+        rec.skillLog = {};
+      });
       persist();
       closeModal();
       render();
