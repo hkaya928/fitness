@@ -7,6 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="KAYA">
   <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22KAYA%20Fitness%22%2C%22short_name%22%3A%22KAYA%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23000000%22%2C%22theme_color%22%3A%22%23000000%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjI4IiBmaWxsPSIjMDAwIi8%2BPGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNDQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZhMTE0ZiIgc3Ryb2tlLXdpZHRoPSIxNCIvPjxjaXJjbGUgY3g9IjY0IiBjeT0iNjQiIHI9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiMzNGM3NTkiIHN0cm9rZS13aWR0aD0iMTIiLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjY0IiByPSIxMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWVlYWVmIiBzdHJva2Utd2lkdGg9IjEwIi8%2BPC9zdmc%2B%22%2C%22sizes%22%3A%22128x128%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjI4IiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNDQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZhMTE0ZiIgc3Ryb2tlLXdpZHRoPSIxNCIvPjxjaXJjbGUgY3g9IjY0IiBjeT0iNjQiIHI9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiMzNGM3NTkiIHN0cm9rZS13aWR0aD0iMTIiLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjY0IiByPSIxMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWVlYWVmIiBzdHJva2Utd2lkdGg9IjEwIi8+PC9zdmc+">
   <title>KAYA Fitness</title>
   <style>
     :root {
@@ -815,6 +817,94 @@
       font-weight: 900;
       color: var(--green);
     }
+    .draft-note {
+      margin-top: 10px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .exercise-name-btn {
+      all: unset;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      display: inline;
+    }
+    .exercise-hint {
+      margin-top: 5px;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .mini-icon-btn {
+      min-width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+    }
+    .mini-icon-btn svg { width: 16px; height: 16px; }
+    .weight-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .rest-timer-bar {
+      position: sticky;
+      bottom: calc(86px + var(--safe-bottom));
+      z-index: 8;
+      margin: 12px 0 0;
+      padding: 11px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(20,20,22,.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 16px 35px rgba(0,0,0,.35);
+    }
+    .timer-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .timer-progress {
+      height: 4px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      margin: 9px 0;
+    }
+    .timer-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+    }
+    .history-list {
+      display: grid;
+      gap: 9px;
+    }
+    .history-row {
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      padding: 10px;
+    }
+    .plate-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
 
     .search {
       width: 100%;
@@ -1142,8 +1232,15 @@
     "use strict";
 
     var STORAGE_KEY = "kaya.fitness.single.html.v10";
-    var VERSION = 12;
+    var VERSION = 13;
+    var PHOTO_DB = "kaya-fitness-photos-v1";
+    var PHOTO_STORE = "photos";
     var storageOK = true;
+    var idbAvailable = "indexedDB" in window;
+    var photoCache = {};
+    var draftTimer = null;
+    var restTimerInterval = null;
+    var audioCtx = null;
     var state = loadState();
     var ui = {
       tab: "today",
@@ -1156,6 +1253,8 @@
       trainSearch: "",
       skillSearch: "",
       activeWorkoutId: "",
+      workoutDraftNotice: "",
+      restTimer: { active: false, duration: 0, remaining: 0, endsAt: 0 },
       expanded: {}
     };
 
@@ -1178,13 +1277,19 @@
           note: "Home gym, strength, jiu-jitsu, Muay Thai, mobility.",
           goalWeight: 165,
           bodyFatGoal: 14,
-          photo: { data: "", name: "" },
+          photo: { id: "", data: "", name: "" },
           photos: {
-            before: { date: "", data: "", name: "" },
-            after: { date: "", data: "", name: "" },
-            dream: { date: "", data: "", name: "" }
+            before: { id: "", date: "", data: "", name: "", caption: "" },
+            after: { id: "", date: "", data: "", name: "", caption: "" },
+            dream: { id: "", date: "", data: "", name: "", caption: "" }
           }
         },
+        settings: {
+          barWeight: 45,
+          backupDismissedAt: ""
+        },
+        lastExportAt: "",
+        draftSession: null,
         targets: {
           steps: 9000,
           water: 12,
@@ -1665,13 +1770,23 @@
       if (!Array.isArray(data.sessions)) data.sessions = [];
       if (!Array.isArray(data.soccerSessions)) data.soccerSessions = [];
       if (!Array.isArray(data.measurements)) data.measurements = [];
+      if (!Array.isArray(data.templates)) data.templates = defaultTemplates().map(normalizeTemplate);
       if (!Array.isArray(data.muayThaiPrinciples)) data.muayThaiPrinciples = defaultMuayThaiPrinciples();
       if (!Array.isArray(data.muayThaiTechniques)) data.muayThaiTechniques = defaultMuayThaiTechniques();
       if (!Array.isArray(data.soccerDrills)) data.soccerDrills = defaultSoccerDrills();
       if (!data.targets) data.targets = defaultState().targets;
       if (!data.profile) data.profile = defaultState().profile;
-      if (!data.profile.photo) data.profile.photo = { data: "", name: "" };
+      if (!data.settings) data.settings = defaultState().settings;
+      if (data.settings.barWeight == null) data.settings.barWeight = 45;
+      if (data.settings.backupDismissedAt == null) data.settings.backupDismissedAt = "";
+      if (data.lastExportAt == null) data.lastExportAt = "";
+      if (data.draftSession == null) data.draftSession = null;
+      if (!data.profile.photo) data.profile.photo = { id: "", data: "", name: "" };
+      data.profile.photo = normalizePhotoMeta(data.profile.photo, "profile");
       if (!data.profile.photos) data.profile.photos = defaultState().profile.photos;
+      ["before","after","dream"].forEach(function (slot) {
+        data.profile.photos[slot] = normalizePhotoMeta(data.profile.photos[slot], slot);
+      });
       if (previousVersion < 12) {
         if (num(data.targets.water) > 0 && num(data.targets.water) <= 4) data.targets.water = Math.round(num(data.targets.water) * 4);
         if (num(data.targets.skill) >= 25) data.targets.skill = 10;
@@ -1692,16 +1807,207 @@
       }
     }
 
+    function normalizePhotoMeta(photo, slot) {
+      photo = photo || {};
+      if (typeof photo === "string") photo = { data: photo };
+      if (!photo.id && photo.data) photo.id = photoKey(slot);
+      return {
+        id: photo.id || "",
+        date: photo.date || "",
+        data: photo.data || "",
+        name: photo.name || "",
+        caption: photo.caption || ""
+      };
+    }
+
+    function photoKey(slot) {
+      return "photo-" + slot;
+    }
+
+    function idbOpen() {
+      return new Promise(function (resolve, reject) {
+        if (!idbAvailable) return reject(new Error("IndexedDB unavailable"));
+        var req;
+        try {
+          req = indexedDB.open(PHOTO_DB, 1);
+        } catch (err) {
+          idbAvailable = false;
+          return reject(err);
+        }
+        req.onupgradeneeded = function () {
+          var db = req.result;
+          if (!db.objectStoreNames.contains(PHOTO_STORE)) db.createObjectStore(PHOTO_STORE);
+        };
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () {
+          idbAvailable = false;
+          reject(req.error || new Error("IndexedDB open failed"));
+        };
+      });
+    }
+
+    function idbWithStore(mode, work) {
+      return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var tx = db.transaction(PHOTO_STORE, mode);
+          var store = tx.objectStore(PHOTO_STORE);
+          var result;
+          tx.oncomplete = function () { db.close(); resolve(result); };
+          tx.onerror = function () { db.close(); reject(tx.error || new Error("IndexedDB transaction failed")); };
+          try {
+            result = work(store);
+          } catch (err) {
+            db.close();
+            reject(err);
+          }
+        });
+      });
+    }
+
+    function idbPut(store, key, value) {
+      return idbWithStore("readwrite", function (s) { s.put(value, key); });
+    }
+
+    function idbGet(store, key) {
+      return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var tx = db.transaction(store, "readonly");
+          var req = tx.objectStore(store).get(key);
+          req.onsuccess = function () { db.close(); resolve(req.result); };
+          req.onerror = function () { db.close(); reject(req.error || new Error("IndexedDB read failed")); };
+        });
+      });
+    }
+
+    function idbDelete(store, key) {
+      return idbWithStore("readwrite", function (s) { s.delete(key); });
+    }
+
+    function idbKeys(store) {
+      return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var tx = db.transaction(store, "readonly");
+          var req = tx.objectStore(store).getAllKeys();
+          req.onsuccess = function () { db.close(); resolve(req.result || []); };
+          req.onerror = function () { db.close(); reject(req.error || new Error("IndexedDB keys failed")); };
+        });
+      });
+    }
+
+    function allPhotoMetas() {
+      var metas = [{ slot: "profile", meta: state.profile.photo }];
+      ["before","after","dream"].forEach(function (slot) {
+        metas.push({ slot: slot, meta: state.profile.photos && state.profile.photos[slot] });
+      });
+      return metas.filter(function (entry) { return !!entry.meta; });
+    }
+
+    function migratePhotosToIDB() {
+      if (!idbAvailable) return Promise.resolve(false);
+      var changed = false;
+      var jobs = allPhotoMetas().map(function (entry) {
+        var meta = entry.meta;
+        if (!meta.data) return Promise.resolve();
+        meta.id = meta.id || photoKey(entry.slot);
+        return idbPut(PHOTO_STORE, meta.id, meta.data).then(function () {
+          photoCache[meta.id] = meta.data;
+          meta.data = "";
+          changed = true;
+        });
+      });
+      return Promise.all(jobs).then(function () { return changed; }).catch(function () {
+        idbAvailable = false;
+        return false;
+      });
+    }
+
+    function loadPhotoCache() {
+      if (!idbAvailable) return Promise.resolve();
+      var jobs = allPhotoMetas().map(function (entry) {
+        var id = entry.meta && entry.meta.id;
+        if (!id || photoCache[id]) return Promise.resolve();
+        return idbGet(PHOTO_STORE, id).then(function (value) {
+          if (value) photoCache[id] = value;
+        }).catch(function () { idbAvailable = false; });
+      });
+      return Promise.all(jobs);
+    }
+
+    function photoSrc(meta) {
+      meta = meta || {};
+      return meta.data || (meta.id ? photoCache[meta.id] : "") || "";
+    }
+
+    function savePhoto(slot, dataUrl, name) {
+      var meta;
+      if (slot === "profile") {
+        if (!state.profile.photo) state.profile.photo = { id: "", data: "", name: "" };
+        meta = state.profile.photo;
+      } else {
+        if (!state.profile.photos) state.profile.photos = defaultState().profile.photos;
+        if (!state.profile.photos[slot]) state.profile.photos[slot] = { id: "", date: "", data: "", name: "", caption: "" };
+        meta = state.profile.photos[slot];
+        if (!meta.date) meta.date = todayKey();
+      }
+      meta.id = meta.id || photoKey(slot);
+      meta.name = name || "";
+      if (!idbAvailable) {
+        meta.data = dataUrl;
+        persist(); render();
+        return;
+      }
+      idbPut(PHOTO_STORE, meta.id, dataUrl).then(function () {
+        photoCache[meta.id] = dataUrl;
+        meta.data = "";
+        persist(); render();
+      }).catch(function () {
+        idbAvailable = false;
+        meta.data = dataUrl;
+        persist(); render();
+      });
+    }
+
+    function requestPersistentStorage() {
+      try {
+        if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+      } catch (err) {}
+    }
+
+    function registerInlineServiceWorker() {
+      try {
+        if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+        var code = 'self.addEventListener("install",function(e){self.skipWaiting();});' +
+          'self.addEventListener("activate",function(e){e.waitUntil(self.clients.claim());});' +
+          'self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).then(function(r){var c=r.clone();caches.open("kaya-v13").then(function(cache){cache.put(e.request,c);});return r;}).catch(function(){return caches.match(e.request);}));});';
+        var url = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+        navigator.serviceWorker.register(url).catch(function () {});
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      } catch (err) {}
+    }
+
+    function bootPhotoStorage() {
+      migratePhotosToIDB().then(function (changed) {
+        return loadPhotoCache().then(function () {
+          if (changed) persist();
+          render();
+        });
+      });
+    }
+
     function uid(prefix) {
       return (prefix || "id") + "-" + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
     }
 
-    function todayKey() {
-      var d = new Date();
+    function dateKey(d) {
+      d = d || new Date();
       var y = d.getFullYear();
       var m = String(d.getMonth() + 1).padStart(2, "0");
       var day = String(d.getDate()).padStart(2, "0");
       return y + "-" + m + "-" + day;
+    }
+
+    function todayKey() {
+      return dateKey(new Date());
     }
 
     function ensureToday(targetState) {
@@ -1829,7 +2135,7 @@
       for (var i = n - 1; i >= 0; i--) {
         var d = new Date(now);
         d.setDate(now.getDate() - i);
-        out.push(d.toISOString().slice(0, 10));
+        out.push(dateKey(d));
       }
       return out;
     }
@@ -1844,13 +2150,29 @@
       return count;
     }
     function activityScore(date) {
+      return activityStatus(date).score;
+    }
+    function activityStatus(date) {
       var d = state.days[date];
       var sessions = sessionsOn(date).length;
       var soccer = state.soccerSessions.filter(function (s) { return s.date === date; }).length;
-      if (!d) return (sessions || soccer) ? 4 : 0;
-      var habits = Object.values(d.habits || {}).filter(Boolean).length;
-      var skills = num(d.skillReps) + num(d.muayThaiReps);
-      return Math.min(4, sessions * 2 + soccer * 2 + Math.floor(habits / 2) + (skills >= 25 ? 1 : 0) + (num(d.soccerMinutes) >= 20 ? 1 : 0));
+      var habits = d ? Object.values(d.habits || {}).filter(Boolean).length : 0;
+      var skills = d ? num(d.skillReps) + num(d.muayThaiReps) : 0;
+      var soccerMinutes = d ? num(d.soccerMinutes) : 0;
+      var score = Math.min(4, sessions * 2 + soccer * 2 + Math.floor(habits / 2) + (skills >= 25 ? 1 : 0) + (soccerMinutes >= 20 ? 1 : 0));
+      if (score > 0) {
+        if (sessions) return { score: score, message: "Streak safe - workout logged." };
+        if (soccer) return { score: score, message: "Streak safe - soccer logged." };
+        if (skills >= 25) return { score: score, message: "Streak safe - 25 skill reps logged." };
+        if (habits >= 2) return { score: score, message: "Streak safe - " + habits + " habits hit." };
+        return { score: score, message: "Streak safe - soccer minutes logged." };
+      }
+      var needs = [];
+      needs.push("log a workout");
+      needs.push(Math.max(0, 25 - skills) + " skill reps");
+      needs.push(Math.max(0, 2 - habits) + " more habits");
+      needs.push(Math.max(0, 20 - soccerMinutes) + " soccer minutes");
+      return { score: 0, message: "Streak at risk: " + needs.join(", or ") + "." };
     }
     function tier(reps) {
       var tiers = [[25,"Started"],[100,"Familiar"],[250,"Reliable"],[500,"Sharp"],[1000,"Complete"]];
@@ -1890,7 +2212,9 @@
         water: '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
         moon: '<path d="M21 14.5A7.5 7.5 0 0 1 9.5 3 8.5 8.5 0 1 0 21 14.5z"/>',
         target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
-        note: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+        note: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+        plates: '<path d="M4 9v6M20 9v6M7 7v10M17 7v10M10 12h4"/>',
+        history: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/><path d="M12 7v6l4 2"/>'
       };
       return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || "") + '</svg>';
     }
@@ -1907,7 +2231,7 @@
       document.querySelectorAll(".nav-btn").forEach(function (btn) {
         btn.setAttribute("aria-current", btn.dataset.tab === ui.tab ? "page" : "false");
       });
-      var html = storageOK ? "" : '<div class="storage-warning">Phone storage is not available in this browser mode. Export backups often until storage is enabled.</div>';
+      var html = (storageOK && idbAvailable) ? "" : '<div class="storage-warning">Phone storage is limited in this browser mode. Export backups often until storage is enabled.</div>';
       if (ui.tab === "workout") html += renderWorkout();
       if (ui.tab === "today") html += renderToday();
       if (ui.tab === "train") html += renderTrain();
@@ -1915,6 +2239,12 @@
       if (ui.tab === "progress") html += renderProgress();
       if (ui.tab === "me") html += renderMe();
       view.innerHTML = html;
+      if (ui.tab === "workout") {
+        setTimeout(function () {
+          updateWorkoutProgress();
+          syncRestTimerBar();
+        }, 0);
+      }
     }
 
     function initials(name) {
@@ -1931,6 +2261,7 @@
       var skillTotal = num(rec.skillReps) + num(rec.muayThaiReps);
       var skillPct = pct(skillTotal, state.targets.skill);
       var habitSummary = habitStats(rec);
+      var draft = activeDraft();
       var greeting = new Date().getHours() < 12 ? "Good morning" : (new Date().getHours() < 18 ? "Good afternoon" : "Good evening");
       return '<div class="tab-view">' +
         '<h1 class="hero-title">' + greeting + ', ' + esc((state.profile.name || "Hasan").split(" ")[0]) + '</h1>' +
@@ -1942,6 +2273,7 @@
               ringText("SKILL", skillTotal, state.targets.skill, "var(--cyan)") +
             '</div>' +
           '</div>' +
+          renderStreakStatusLine(todayKey()) +
         '</section>' +
         '<section class="card workout-hero pad" aria-label="Today workout" style="margin-top:12px;">' +
           '<div class="tiny">Today - ' + esc(template.day) + '</div>' +
@@ -1951,7 +2283,7 @@
             '<span class="badge red">' + esc(template.type) + '</span>' +
           '</div>' +
           '<div class="chips" style="margin:14px 0 12px;"><span class="badge">' + esc(template.exercises.length) + ' exercises</span><span class="badge">~' + esc(template.duration) + ' min</span><span class="badge">RPE ' + esc(template.rpe) + '</span></div>' +
-          '<button class="btn primary full" type="button" data-action="start-template" data-id="' + attr(template.id) + '">' + icon("play") + 'Start Workout</button>' +
+          (draft ? '<button class="btn primary full" type="button" data-action="resume-draft">' + icon("play") + 'Resume Workout</button>' : '<button class="btn primary full" type="button" data-action="start-template" data-id="' + attr(template.id) + '">' + icon("play") + 'Start Workout</button>') +
         '</section>' +
         '<section class="grid-2" style="margin-top:12px;">' +
           metricCard("Recovery", recoveryScore(rec), "/100", recoveryCopy(rec), "var(--green)") +
@@ -1987,6 +2319,10 @@
     }
     function ringText(label, value, target, color) {
       return '<div><div class="ring-label" style="color:' + color + ';">' + label + '</div><div class="ring-num">' + esc(value) + '<span class="subtext">/' + esc(target) + '</span></div></div>';
+    }
+    function renderStreakStatusLine(date) {
+      var status = activityStatus(date);
+      return '<div class="subtext" style="margin-top:12px;text-align:center;">' + esc(status.message) + '</div>';
     }
     function metricCard(label, value, unit, sub, color, quickType) {
       var attrAction = quickType ? ' data-action="open-quick" data-type="' + attr(quickType) + '"' : "";
@@ -2075,16 +2411,13 @@
       for (var pad = 0; pad < first.getDay(); pad++) cells.push('<div></div>');
       for (var day = 1; day <= daysInMonth; day++) {
         var d = new Date(year, month, day);
-        var key = dateKeyFrom(d);
+        var key = dateKey(d);
         var template = state.templates.find(function (t) { return t.day === dayCode(d); });
         var done = sessionsOn(key).some(function (s) { return template && s.templateId === template.id; });
         var isToday = key === todayKey();
         cells.push('<button class="month-day ' + (isToday ? "today " : "") + (done ? "done" : "") + '" type="button" data-action="start-template" data-id="' + attr(template ? template.id : "") + '"' + (template ? "" : " disabled") + '><span class="month-num">' + day + '</span><span class="month-workout">' + esc(template ? template.name.replace(/^Lift |^Combat - /, "") : "") + '</span>' + (done ? '<span class="badge green" style="font-size:8px;min-height:18px;padding:0 5px;">Done</span>' : "") + '</button>');
       }
       return '<div class="month-grid" aria-label="Monthly workout plan">' + cells.join("") + '</div>';
-    }
-    function dateKeyFrom(d) {
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     }
     function recoveryScore(rec) {
       var sleep = pct(num(rec.metrics.sleep), state.targets.sleep) * 40;
@@ -2513,7 +2846,7 @@
     }
     function renderPRRow(name) {
       var pr = state.prs[name] || {};
-      return '<article class="pr-row card" style="padding:13px 14px;"><div class="row"><div><div style="font-weight:850;">' + esc(name) + '</div><div class="subtext">' + esc(pr.value || "-") + ' ' + esc(pr.unit || "") + (pr.date ? " - " + esc(pr.date) : "") + '</div></div><button class="btn small ghost" type="button" data-action="open-pr" data-name="' + attr(name) + '">' + icon("edit") + 'Edit</button></div></article>';
+      return '<article class="pr-row card" style="padding:13px 14px;"><div class="row"><div><button class="exercise-name-btn" type="button" data-action="open-exercise-history" data-name="' + attr(name) + '">' + esc(name) + '</button><div class="subtext">' + esc(pr.value || "-") + ' ' + esc(pr.unit || "") + (pr.date ? " - " + esc(pr.date) : "") + '</div></div><button class="btn small ghost" type="button" data-action="open-pr" data-name="' + attr(name) + '">' + icon("edit") + 'Edit</button></div></article>';
     }
 
     function renderSoccer() {
@@ -2579,25 +2912,42 @@
           toolRow("Daily targets", "Steps, water cups, creatine, protein, skill points.", "open-targets", "target") +
           toolRow("Add new", "Workout, BJJ, Muay Thai, or soccer.", "open-add-menu", "plus") +
         '</section>' +
+        renderBackupWarning() +
         '<div class="section-title">Data tools</div>' +
         '<section class="stack">' +
           toolRow("Export all data", "Download a JSON backup for GitHub, iCloud, or Drive.", "export-data", "download") +
           toolRow("Import backup", "Restore from a KAYA JSON export.", "import-data", "upload") +
           toolRow("Reset app", "Erase this phone browser's local KAYA data.", "confirm-reset", "trash", "", "danger") +
         '</section>' +
-        '<p class="subtext" style="text-align:center;margin:18px 8px 0;">KAYA v12 - single HTML. Your training data and photos are saved only in this browser on this phone unless you export them.</p>' +
+        '<p class="subtext" style="text-align:center;margin:18px 8px 0;">KAYA v13 - single HTML. Your training data and photos are saved only in this browser on this phone unless you export them.</p>' +
       '</div>';
+    }
+    function renderBackupWarning() {
+      var age = backupAgeDays();
+      if (age < 14 || state.settings.backupDismissedAt === todayKey()) return "";
+      var label = state.lastExportAt ? age + " days ago" : "never";
+      return '<section class="storage-warning" style="margin-top:14px;"><div class="row"><span>Last backup: ' + esc(label) + ' - export your data.</span><button class="btn small ghost" type="button" data-action="dismiss-backup-warning">Dismiss</button></div></section>';
+    }
+    function backupAgeDays() {
+      if (!state.lastExportAt) return 999;
+      var last = new Date(state.lastExportAt);
+      if (!Number.isFinite(last.getTime())) return 999;
+      var start = new Date(dateKey(last) + "T00:00:00");
+      var now = new Date(todayKey() + "T00:00:00");
+      return Math.floor((now - start) / 86400000);
     }
     function renderAvatarContent(size) {
       var photo = state.profile.photo || {};
-      if (photo.data) return '<img src="' + attr(photo.data) + '" alt="Profile photo">';
+      var src = photoSrc(photo);
+      if (src) return '<img src="' + attr(src) + '" alt="Profile photo">';
       return esc((state.profile.initials || initials(state.profile.name)).slice(0, size === "large" ? 3 : 2).toUpperCase());
     }
     function renderPhotoCard(slot, label) {
       var photo = (state.profile.photos && state.profile.photos[slot]) || { date: "", data: "" };
+      var src = photoSrc(photo);
       return '<article class="photo-card">' +
         '<button class="photo-frame" type="button" data-action="upload-photo" data-slot="' + attr(slot) + '" aria-label="Upload ' + attr(label) + ' photo">' +
-          (photo.data ? '<img src="' + attr(photo.data) + '" alt="' + attr(label) + ' photo">' : '<span>' + esc(label) + '<br>Upload</span>') +
+          (src ? '<img src="' + attr(src) + '" alt="' + attr(label) + ' photo">' : '<span>' + esc(label) + '<br>Upload</span>') +
         '</button>' +
         '<div class="tiny" style="margin-bottom:6px;">' + esc(label) + '</div>' +
         '<input class="photo-date" type="date" data-photo-date="' + attr(slot) + '" value="' + attr(photo.date || "") + '">' +
@@ -2633,7 +2983,7 @@
       var btn = event.target.closest("[data-action]");
       if (!btn) return;
       var action = btn.dataset.action;
-      if (action === "set-tab") { ui.tab = btn.dataset.tab; render(); view.focus({ preventScroll: true }); return; }
+      if (action === "set-tab") { saveDraftNow(document.querySelector('form[data-form="session"]')); ui.tab = btn.dataset.tab; render(); view.focus({ preventScroll: true }); return; }
       if (action === "set-filter") {
         if (btn.dataset.filterType === "train") ui.trainFilter = btn.dataset.value;
         if (btn.dataset.filterType === "skill") ui.skillFilter = btn.dataset.value;
@@ -2654,7 +3004,9 @@
       if (action === "open-daily-note") { openDailyNote(); return; }
       if (action === "open-targets") { openTargets(); return; }
       if (action === "start-template") { openSession(btn.dataset.id); return; }
-      if (action === "exit-workout") { ui.activeWorkoutId = ""; ui.tab = "today"; render(); return; }
+      if (action === "resume-draft") { resumeDraft(); return; }
+      if (action === "discard-draft") { discardDraft(btn.dataset.id || ""); return; }
+      if (action === "exit-workout") { saveDraftNow(document.querySelector('form[data-form="session"]')); ui.activeWorkoutId = ""; ui.tab = "today"; render(); return; }
       if (action === "open-template") { openTemplate(btn.dataset.id || null); return; }
       if (action === "duplicate-template") { duplicateTemplate(btn.dataset.id); return; }
       if (action === "toggle-skill") { ui.expanded[btn.dataset.id] = !ui.expanded[btn.dataset.id]; render(); return; }
@@ -2668,8 +3020,13 @@
       if (action === "add-soccer-min") { addSoccerMinutes(btn.dataset.id, num(btn.dataset.amount)); return; }
       if (action === "favorite-soccer") { favoriteSoccer(btn.dataset.id); return; }
       if (action === "open-soccer-drill") { openSoccerDrill(btn.dataset.id || null); return; }
+      if (action === "open-exercise-history") { openExerciseHistory(btn.dataset.name || ""); return; }
+      if (action === "open-plate-calc") { openPlateCalc(btn.dataset.inputName || ""); return; }
+      if (action === "rest-add-30") { addRestTime(30); return; }
+      if (action === "rest-skip") { skipRestTimer(); return; }
       if (action === "open-profile") { openProfile(); return; }
       if (action === "open-add-menu") { openAddMenu(); return; }
+      if (action === "dismiss-backup-warning") { state.settings.backupDismissedAt = todayKey(); persist(); render(); return; }
       if (action === "upload-photo") { pendingPhotoSlot = btn.dataset.slot; photoFile.click(); return; }
       if (action === "export-data") { exportData(); return; }
       if (action === "import-data") { importFile.click(); return; }
@@ -2683,9 +3040,14 @@
       if (event.target.dataset.photoDate) {
         var slot = event.target.dataset.photoDate;
         if (!state.profile.photos) state.profile.photos = defaultState().profile.photos;
-        if (!state.profile.photos[slot]) state.profile.photos[slot] = { date: "", data: "", name: "" };
+        if (!state.profile.photos[slot]) state.profile.photos[slot] = { id: "", date: "", data: "", name: "", caption: "" };
+        state.profile.photos[slot] = normalizePhotoMeta(state.profile.photos[slot], slot);
         state.profile.photos[slot].date = event.target.value;
         persist();
+        return;
+      }
+      if (event.target.closest('form[data-form="session"]')) {
+        scheduleDraftSave(event.target.closest('form[data-form="session"]'));
         return;
       }
       if (!key) return;
@@ -2703,6 +3065,13 @@
         var row = event.target.closest("[data-set-row]");
         if (row) row.classList.toggle("done", event.target.checked);
         updateWorkoutProgress();
+        scheduleDraftSave(event.target.closest('form[data-form="session"]'));
+        if (event.target.checked) {
+          prepareAudio();
+          startRestTimer(event.target.dataset.rest);
+        }
+      } else if (event.target && event.target.closest('form[data-form="session"]')) {
+        scheduleDraftSave(event.target.closest('form[data-form="session"]'));
       }
     });
 
@@ -2722,6 +3091,7 @@
       if (formType === "soccer-log") saveSoccerLog(data);
       if (formType === "soccer-drill") saveSoccerDrill(data, form.dataset.id || null);
       if (formType === "profile") saveProfile(data);
+      if (formType === "plate-calc") savePlateCalc(data);
       if (formType === "reset") resetApp(data);
       if (formType === "reset-progress") resetProgress(data);
     });
@@ -2735,9 +3105,13 @@
           var imported = JSON.parse(String(reader.result || ""));
           if (!imported || !imported.profile || !imported.templates) throw new Error("Not a KAYA backup");
           state = migrate(deepMerge(defaultState(), imported));
-          persist();
-          closeModal();
-          render();
+          migratePhotosToIDB().then(function () {
+            persist();
+            return loadPhotoCache();
+          }).then(function () {
+            closeModal();
+            render();
+          });
         } catch (err) {
           openMessage("Import failed", "That file does not look like a valid KAYA backup.");
         }
@@ -2751,25 +3125,9 @@
       if (!file || !pendingPhotoSlot) return;
       var reader = new FileReader();
       reader.onload = function () {
-        if (pendingPhotoSlot === "profile") {
-          if (!state.profile.photo) state.profile.photo = { data: "", name: "" };
-          state.profile.photo.data = String(reader.result || "");
-          state.profile.photo.name = file.name || "";
-          persist();
-          photoFile.value = "";
-          pendingPhotoSlot = "";
-          render();
-          return;
-        }
-        if (!state.profile.photos) state.profile.photos = defaultState().profile.photos;
-        if (!state.profile.photos[pendingPhotoSlot]) state.profile.photos[pendingPhotoSlot] = { date: "", data: "", name: "" };
-        state.profile.photos[pendingPhotoSlot].data = String(reader.result || "");
-        state.profile.photos[pendingPhotoSlot].name = file.name || "";
-        if (!state.profile.photos[pendingPhotoSlot].date) state.profile.photos[pendingPhotoSlot].date = todayKey();
-        persist();
+        savePhoto(pendingPhotoSlot, String(reader.result || ""), file.name || "");
         photoFile.value = "";
         pendingPhotoSlot = "";
-        render();
       };
       reader.readAsDataURL(file);
     });
@@ -2958,6 +3316,8 @@
       }
       normalizeTemplate(t);
       var plan = workoutPlan(t);
+      var draft = draftForTemplate(id);
+      var fields = draft ? draft.fields || {} : {};
       var index = 0;
       var totalSets = 0;
       var rows = plan.map(function (section) {
@@ -2967,39 +3327,167 @@
           var setCount = setCountFor(e);
           totalSets += setCount;
           index++;
-          return renderWorkoutExercise(section.label, e, i, stepNum, setCount);
+          return renderWorkoutExercise(section.label, e, i, stepNum, setCount, id, fields);
         }).join("");
         return '<div class="section-title" style="margin-top:14px;">' + esc(section.label) + '</div>' + sectionRows;
       }).join("");
       return '<div class="tab-view workout-page">' +
-        '<div class="workout-top"><div class="row"><button class="btn small ghost" type="button" data-action="exit-workout">Back</button><span class="workout-progress-text" id="workoutProgress">0 / ' + totalSets + ' sets</span></div><h1 class="hero-title" style="margin:12px 0 5px;">' + esc(t.name) + '</h1><div class="subtext">' + esc(t.focus) + '</div></div>' +
+        '<div class="workout-top"><div class="row"><button class="btn small ghost" type="button" data-action="exit-workout">Back</button><span class="workout-progress-text" id="workoutProgress">0 / ' + totalSets + ' sets</span></div><h1 class="hero-title" style="margin:12px 0 5px;">' + esc(t.name) + '</h1><div class="subtext">' + esc(t.focus) + '</div>' + (ui.workoutDraftNotice ? '<div class="draft-note">' + esc(ui.workoutDraftNotice) + '</div>' : '') + '</div>' +
         '<form data-form="session" data-id="' + attr(id) + '">' +
         '<section class="card pad"><p class="body-copy" style="margin-top:0;">Check each set after you finish it. Edit reps and weight to what you actually did.</p>' +
-        '<div class="field-row">' + field("Duration minutes", "duration", t.duration, "number", 'step="1"') + field("Date", "date", todayKey(), "date") + '</div></section>' +
+        '<div class="field-row">' + field("Duration minutes", "duration", fieldValue(fields, "duration", t.duration), "number", 'step="1"') + field("Date", "date", fieldValue(fields, "date", todayKey()), "date") + '</div></section>' +
         '<input type="hidden" name="count" value="' + index + '">' +
         '<div style="margin-top:12px;">' + rows + '</div>' +
-        '<section class="card pad" style="margin-top:12px;">' + area("Session notes", "notes", "", 'placeholder="What changed? What should you do next time?"') + '<button class="btn primary full" type="submit" style="margin-top:12px;">' + icon("save") + 'Save Workout</button></section>' +
-        '</form></div>';
+        '<section class="card pad" style="margin-top:12px;">' + area("Session notes", "notes", fieldValue(fields, "notes", ""), 'placeholder="What changed? What should you do next time?"') + '<button class="btn primary full" type="submit" style="margin-top:12px;">' + icon("save") + 'Save Workout</button></section>' +
+        '</form><div id="restTimerMount"></div></div>';
     }
 
-    function renderWorkoutExercise(phase, e, i, stepNum, setCount) {
+    function renderWorkoutExercise(phase, e, i, stepNum, setCount, templateId, fields) {
       var setRows = [];
-      for (var s = 0; s < setCount; s++) setRows.push(renderSetRow(i, s, e));
+      var last = lastPerformance(templateId, e.name);
+      for (var s = 0; s < setCount; s++) setRows.push(renderSetRow(i, s, e, fields, last));
+      var hint = lastPerformanceHint(e, last);
       return '<details class="workout-step" data-testid="workout-step-' + i + '">' +
-        '<summary class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><div style="font-weight:900;font-size:16px;">' + esc(e.name) + '</div><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' · rest ' + esc(e.rest) + 's' : '') + '</div></div></div><span style="display:flex;align-items:center;gap:8px;"><span class="badge">' + esc(phase) + '</span><span class="chevron">›</span></span></summary>' +
+        '<summary class="workout-step-head"><div style="display:flex;gap:11px;min-width:0;"><div class="step-number">' + stepNum + '</div><div style="min-width:0;"><button class="exercise-name-btn" type="button" data-action="open-exercise-history" data-name="' + attr(e.name) + '">' + esc(e.name) + '</button><div class="subtext" style="margin-top:3px;">' + esc(e.sets) + ' x ' + esc(e.reps) + (e.rest ? ' · rest ' + esc(e.rest) + 's' : '') + '</div>' + (hint ? '<div class="exercise-hint">' + esc(hint) + '</div>' : '') + '</div></div><span style="display:flex;align-items:center;gap:8px;"><span class="badge">' + esc(phase) + '</span><span class="chevron">›</span></span></summary>' +
         '<div class="collapse-body"><div class="exercise-guide"><div><div class="tiny">Equipment</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.equipment) + '</p></div><div><div class="tiny">How</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.how) + '</p></div><div><div class="tiny">Tips</div><p class="body-copy" style="margin:4px 0 0;">' + esc(e.tips || e.note) + '</p></div></div>' +
         '<div class="set-table">' + setRows.join("") + '</div>' +
         '<input type="hidden" name="name_' + i + '" value="' + attr(e.name) + '"><input type="hidden" name="phase_' + i + '" value="' + attr(phase) + '"><input type="hidden" name="setcount_' + i + '" value="' + setCount + '"></div>' +
       '</details>';
     }
 
-    function renderSetRow(exerciseIndex, setIndex, e) {
+    function renderSetRow(exerciseIndex, setIndex, e, fields, last) {
       var label = setIndex + 1;
-      var reps = repValueForSet(e.reps, setIndex);
-      return '<div class="set-row" data-set-row><label class="set-check"><input type="checkbox" data-set-check name="done_' + exerciseIndex + '_' + setIndex + '" value="1"><span>Set ' + label + '</span></label>' +
-        field("Reps", "reps_" + exerciseIndex + "_" + setIndex, reps, "text", 'inputmode="numeric"') +
-        field("Weight", "weight_" + exerciseIndex + "_" + setIndex, e.weight || "", "number", 'step="0.5" inputmode="decimal"') +
+      var doneName = "done_" + exerciseIndex + "_" + setIndex;
+      var repsName = "reps_" + exerciseIndex + "_" + setIndex;
+      var weightName = "weight_" + exerciseIndex + "_" + setIndex;
+      var lastSet = last && last.setLogs ? last.setLogs[setIndex] : null;
+      var reps = fieldValue(fields, repsName, lastSet ? lastSet.reps : repValueForSet(e.reps, setIndex));
+      var weight = fieldValue(fields, weightName, lastSet ? lastSet.weight : (e.weight || ""));
+      var checked = fields && fields[doneName] === "1";
+      return '<div class="set-row ' + (checked ? "done" : "") + '" data-set-row><label class="set-check"><input type="checkbox" data-set-check data-rest="' + attr(e.rest || 0) + '" name="' + attr(doneName) + '" value="1"' + (checked ? " checked" : "") + '><span>Set ' + label + '</span></label>' +
+        field("Reps", repsName, reps, "text", 'inputmode="numeric"') +
+        weightField(weightName, weight) +
       '</div>';
+    }
+
+    function weightField(name, value) {
+      return '<div class="field"><div class="weight-label-row"><label for="' + attr(name) + '">Weight</label><button class="mini-icon-btn" type="button" data-action="open-plate-calc" data-input-name="' + attr(name) + '" aria-label="Open plate calculator">' + icon("plates") + '</button></div><input id="' + attr(name) + '" name="' + attr(name) + '" type="number" value="' + attr(value == null ? "" : value) + '" step="0.5" inputmode="decimal"></div>';
+    }
+
+    function fieldValue(fields, name, fallback) {
+      return fields && fields[name] != null ? fields[name] : fallback;
+    }
+
+    function activeDraft() {
+      if (!state.draftSession) return null;
+      return draftIsToday(state.draftSession) ? state.draftSession : null;
+    }
+
+    function draftIsToday(draft) {
+      if (!draft) return false;
+      var key = draft.date || dateKey(new Date(draft.startedAt || Date.now()));
+      return key === todayKey();
+    }
+
+    function draftForTemplate(templateId) {
+      var draft = state.draftSession;
+      return draft && draft.templateId === templateId ? draft : null;
+    }
+
+    function serializeWorkoutForm(form) {
+      var fields = {};
+      Array.from(form.elements).forEach(function (el) {
+        if (!el.name) return;
+        if (el.type === "checkbox") fields[el.name] = el.checked ? "1" : "";
+        else fields[el.name] = el.value;
+      });
+      state.draftSession = {
+        templateId: form.dataset.id,
+        date: todayKey(),
+        startedAt: (state.draftSession && state.draftSession.templateId === form.dataset.id && state.draftSession.startedAt) || new Date().toISOString(),
+        fields: fields
+      };
+    }
+
+    function scheduleDraftSave(form) {
+      if (!form || form.dataset.form !== "session") return;
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(function () {
+        serializeWorkoutForm(form);
+        persist();
+      }, 500);
+    }
+
+    function saveDraftNow(form) {
+      if (!form || form.dataset.form !== "session") return;
+      clearTimeout(draftTimer);
+      serializeWorkoutForm(form);
+      persist();
+    }
+
+    function openDraftPrompt(requestedId) {
+      var draft = state.draftSession;
+      var t = draft && state.templates.find(function (x) { return x.id === draft.templateId; });
+      var body = '<p class="body-copy">You have an unfinished workout draft' + (t ? ' for ' + esc(t.name) : '') + '. Resume it or discard it before starting another workout.</p>';
+      openModal("Workout draft", body, { single: true, html: '<button class="btn primary full" type="button" data-action="resume-draft">' + icon("play") + 'Resume Draft</button><button class="btn ghost full" type="button" data-action="discard-draft" data-id="' + attr(requestedId || "") + '">Discard Draft</button>' });
+    }
+
+    function resumeDraft() {
+      var draft = state.draftSession;
+      if (!draft) return;
+      ui.activeWorkoutId = draft.templateId;
+      ui.workoutDraftNotice = "Draft restored.";
+      ui.tab = "workout";
+      closeModal();
+      render();
+      view.scrollTop = 0;
+    }
+
+    function discardDraft(nextId) {
+      state.draftSession = null;
+      persist();
+      closeModal();
+      if (nextId) openSession(nextId);
+      else render();
+    }
+
+    function lastPerformance(templateId, exerciseName) {
+      var name = String(exerciseName || "").toLowerCase();
+      var sessions = state.sessions.slice().sort(function (a, b) {
+        return String(b.date || "").localeCompare(String(a.date || ""));
+      });
+      for (var i = 0; i < sessions.length; i++) {
+        var session = sessions[i];
+        if (templateId && session.templateId !== templateId) continue;
+        var match = (session.exercises || []).find(function (e) { return String(e.name || "").toLowerCase() === name; });
+        if (match && match.setLogs && match.setLogs.length) return { session: session, exercise: match, setLogs: match.setLogs };
+      }
+      return null;
+    }
+
+    function lastPerformanceHint(e, last) {
+      if (!last || !last.setLogs || !last.setLogs.length) return "";
+      var weights = last.setLogs.map(function (set) { return num(set.weight); }).filter(function (w) { return w > 0; });
+      var topWeight = weights.length ? Math.max.apply(null, weights) : 0;
+      var reps = last.setLogs.map(function (set) { return parseRepNumber(set.reps); }).filter(Boolean);
+      var text = "Last: " + last.setLogs.map(function (set) { return set.reps; }).join(",") + (topWeight ? " @ " + topWeight + " lb" : "") + " (" + fmtDate(last.session.date) + ")";
+      var topRange = repRangeTop(e.reps);
+      if (topWeight && topRange && reps.length === last.setLogs.length && reps.every(function (r) { return r >= topRange; })) {
+        text += " -> try +" + (topWeight < 100 ? 5 : 10) + " lb";
+      }
+      return text;
+    }
+
+    function parseRepNumber(value) {
+      var match = String(value || "").match(/\d+/);
+      return match ? num(match[0]) : 0;
+    }
+
+    function repRangeTop(value) {
+      var text = String(value || "");
+      var range = text.match(/(\d+)\s*-\s*(\d+)/);
+      if (range) return num(range[2]);
+      return 0;
     }
 
     function setCountFor(e) {
@@ -3026,10 +3514,116 @@
       marker.textContent = done + " / " + boxes.length + " sets";
     }
 
+    function prepareAudio() {
+      try {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        if (!audioCtx) audioCtx = new Ctx();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      } catch (err) {}
+    }
+
+    function beep() {
+      try {
+        if (!audioCtx) return;
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.24);
+      } catch (err) {}
+    }
+
+    function startRestTimer(seconds) {
+      seconds = Math.max(0, Math.round(num(seconds)));
+      if (!seconds) return;
+      ui.restTimer = {
+        active: true,
+        duration: seconds,
+        remaining: seconds,
+        endsAt: Date.now() + seconds * 1000
+      };
+      ensureRestInterval();
+      syncRestTimerBar();
+    }
+
+    function ensureRestInterval() {
+      if (restTimerInterval) return;
+      restTimerInterval = setInterval(tickRestTimer, 500);
+    }
+
+    function tickRestTimer() {
+      if (!ui.restTimer.active) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        return;
+      }
+      ui.restTimer.remaining = Math.max(0, Math.ceil((ui.restTimer.endsAt - Date.now()) / 1000));
+      if (ui.restTimer.remaining <= 0) {
+        ui.restTimer.active = false;
+        syncRestTimerBar();
+        if (navigator.vibrate) {
+          try { navigator.vibrate([200,100,200]); } catch (err) {}
+        }
+        beep();
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        return;
+      }
+      syncRestTimerBar();
+    }
+
+    function addRestTime(seconds) {
+      if (!ui.restTimer.active) return;
+      ui.restTimer.endsAt += seconds * 1000;
+      ui.restTimer.duration += seconds;
+      tickRestTimer();
+    }
+
+    function skipRestTimer() {
+      ui.restTimer.active = false;
+      syncRestTimerBar();
+      if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+      }
+    }
+
+    function syncRestTimerBar() {
+      var mount = document.getElementById("restTimerMount");
+      if (!mount) return;
+      if (!ui.restTimer.active) {
+        mount.innerHTML = "";
+        return;
+      }
+      var remaining = Math.max(0, ui.restTimer.remaining || Math.ceil((ui.restTimer.endsAt - Date.now()) / 1000));
+      var elapsed = Math.max(0, ui.restTimer.duration - remaining);
+      var width = Math.round(pct(elapsed, ui.restTimer.duration) * 100);
+      mount.innerHTML = '<div class="rest-timer-bar"><div class="timer-line"><span>Rest ' + esc(formatTimer(remaining)) + '</span><span class="subtext">' + esc(ui.restTimer.duration) + 's</span></div><div class="timer-progress"><span style="width:' + width + '%"></span></div><div class="row"><button class="btn small ghost" type="button" data-action="rest-add-30">+30s</button><button class="btn small primary" type="button" data-action="rest-skip">Skip</button></div></div>';
+    }
+
+    function formatTimer(seconds) {
+      seconds = Math.max(0, Math.round(seconds));
+      var m = Math.floor(seconds / 60);
+      var s = String(seconds % 60).padStart(2, "0");
+      return m + ":" + s;
+    }
+
     function openSession(id) {
       var t = state.templates.find(function (x) { return x.id === id; });
       if (!t) return;
+      if (state.draftSession && (!draftIsToday(state.draftSession) || state.draftSession.templateId !== id)) {
+        openDraftPrompt(id);
+        return;
+      }
       ui.activeWorkoutId = id;
+      ui.workoutDraftNotice = draftForTemplate(id) ? "Draft restored." : "";
       ui.tab = "workout";
       render();
       view.scrollTop = 0;
@@ -3089,6 +3683,9 @@
       var rec = dayRecord(session.date);
       if (rec.completedTemplates.indexOf(templateId) < 0) rec.completedTemplates.push(templateId);
       rec.habits.mobility = rec.habits.mobility || t.type === "Recovery";
+      state.draftSession = null;
+      ui.workoutDraftNotice = "";
+      skipRestTimer();
       ui.activeWorkoutId = "";
       if (ui.tab === "workout") ui.tab = "today";
       persist(); closeModal(); render();
@@ -3229,6 +3826,99 @@
       persist(); closeModal(); render();
     }
 
+    function exercisePerformances(name) {
+      var target = String(name || "").toLowerCase();
+      var out = [];
+      state.sessions.forEach(function (session) {
+        (session.exercises || []).forEach(function (exercise) {
+          if (String(exercise.name || "").toLowerCase() !== target) return;
+          var setLogs = exercise.setLogs || [];
+          var volume = setLogs.reduce(function (sum, set) { return sum + parseRepNumber(set.reps) * num(set.weight); }, 0);
+          var top = setLogs.reduce(function (best, set) {
+            var reps = parseRepNumber(set.reps);
+            var weight = num(set.weight);
+            var e1rm = weight * (1 + reps / 30);
+            return e1rm > best.e1rm ? { reps: reps, weight: weight, e1rm: e1rm } : best;
+          }, { reps: 0, weight: 0, e1rm: 0 });
+          out.push({ session: session, exercise: exercise, setLogs: setLogs, volume: volume, top: top });
+        });
+      });
+      return out.sort(function (a, b) { return String(b.session.date || "").localeCompare(String(a.session.date || "")); });
+    }
+
+    function openExerciseHistory(name) {
+      var perf = exercisePerformances(name);
+      if (!perf.length) {
+        openMessage(name || "Exercise history", "No saved sets yet. Log this exercise once and its history will show here.");
+        return;
+      }
+      var best = perf.reduce(function (top, item) { return item.top.e1rm > top.e1rm ? item.top : top; }, { reps: 0, weight: 0, e1rm: 0 });
+      var recent = perf.slice(0, 5);
+      var body = '<section class="grid-2">' +
+        metricPanel("Best set", best.weight + " x " + best.reps, "lb", "Top logged set", "") +
+        metricPanel("Est. 1RM", Math.round(best.e1rm), "lb", "Epley estimate", "") +
+      '</section>' +
+      historySparkline(perf.slice(0, 10).reverse()) +
+      '<div class="section-title">Last 5</div><section class="history-list">' + recent.map(renderExerciseHistoryRow).join("") + '</section>';
+      openModal(name, body, { single: true, html: '<button class="btn primary full" type="button" data-action="close-modal">Done</button>' });
+    }
+
+    function renderExerciseHistoryRow(item) {
+      var sets = item.setLogs.map(function (set) { return esc(set.reps) + " @ " + esc(set.weight) + " lb"; }).join(", ");
+      return '<article class="history-row"><div class="row"><span style="font-weight:900;">' + esc(fmtDate(item.session.date)) + '</span><span class="badge">' + esc(Math.round(item.volume)) + ' lb</span></div><div class="subtext" style="margin-top:5px;">' + sets + '</div></article>';
+    }
+
+    function historySparkline(items) {
+      if (!items.length) return "";
+      var values = items.map(function (item) { return item.top.weight; });
+      var max = Math.max.apply(null, values.concat([1]));
+      var min = Math.min.apply(null, values);
+      var span = Math.max(1, max - min);
+      var points = values.map(function (value, index) {
+        var x = values.length === 1 ? 60 : index / (values.length - 1) * 120;
+        var y = 36 - ((value - min) / span * 30);
+        return round(x, 1) + "," + round(y, 1);
+      }).join(" ");
+      return '<svg class="sparkline" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + points + '" fill="none" stroke="var(--cyan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    }
+
+    function openPlateCalc(inputName) {
+      var input = inputName ? document.querySelector('[name="' + cssEscapeName(inputName) + '"]') : null;
+      var target = input ? num(input.value) : 0;
+      var calc = plateCalc(target, num(state.settings.barWeight, 45));
+      var body = '<div class="field-row">' + field("Target weight", "target", target || "", "number", 'step="0.5" inputmode="decimal" readonly') + field("Bar weight", "barWeight", state.settings.barWeight, "number", 'step="0.5" inputmode="decimal"') + '</div>' +
+        '<section class="card pad" style="margin-top:12px;"><div class="tiny">Per side</div><div class="plate-stack">' + (calc.plates.length ? calc.plates.map(function (p) { return '<span class="badge">' + esc(p) + ' lb</span>'; }).join("") : '<span class="subtext">No plates needed.</span>') + '</div><p class="body-copy" style="margin-bottom:0;">' + esc(calc.message) + '</p></section>';
+      openModal("Plate calculator", body, null, 'data-form="plate-calc" data-input-name="' + attr(inputName) + '"');
+    }
+
+    function cssEscapeName(name) {
+      return String(name || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    }
+
+    function plateCalc(target, barWeight) {
+      var side = (target - barWeight) / 2;
+      var plates = [45,35,25,10,5,2.5];
+      var out = [];
+      if (side <= 0) return { plates: out, message: "Use the empty bar." };
+      var remaining = side;
+      plates.forEach(function (plate) {
+        while (remaining + 0.001 >= plate) {
+          out.push(plate);
+          remaining -= plate;
+        }
+      });
+      var loaded = barWeight + out.reduce(function (sum, p) { return sum + p * 2; }, 0);
+      var exact = Math.abs(loaded - target) < 0.01;
+      return { plates: out, message: exact ? "Loads exactly to " + target + " lb." : "Not loadable exactly, closest: " + loaded + " lb." };
+    }
+
+    function savePlateCalc(data) {
+      state.settings.barWeight = num(data.barWeight, 45);
+      persist();
+      closeModal();
+      render();
+    }
+
     function openPR(name) {
       var pr = state.prs[name] || { value: "", unit: "lb", date: todayKey() };
       var body = field("Exercise", "name", name) + '<div class="field-row">' + field("Value", "value", pr.value || "", "number", 'step="0.5"') + field("Unit", "unit", pr.unit || "lb") + '</div>' + field("Date", "date", pr.date || todayKey(), "date");
@@ -3261,7 +3951,34 @@
     }
 
     function exportData() {
-      var payload = JSON.stringify(state, null, 2);
+      state.lastExportAt = new Date().toISOString();
+      persist();
+      var exportState = JSON.parse(JSON.stringify(state));
+      hydrateExportPhotos(exportState).then(function () {
+        downloadExport(JSON.stringify(exportState, null, 2));
+        render();
+      });
+    }
+    function hydrateExportPhotos(exportState) {
+      var metas = [{ slot: "profile", meta: exportState.profile.photo }];
+      ["before","after","dream"].forEach(function (slot) {
+        metas.push({ slot: slot, meta: exportState.profile.photos && exportState.profile.photos[slot] });
+      });
+      var jobs = metas.map(function (entry) {
+        var meta = entry.meta;
+        if (!meta || meta.data || !meta.id) return Promise.resolve();
+        if (photoCache[meta.id]) {
+          meta.data = photoCache[meta.id];
+          return Promise.resolve();
+        }
+        if (!idbAvailable) return Promise.resolve();
+        return idbGet(PHOTO_STORE, meta.id).then(function (value) {
+          if (value) meta.data = value;
+        }).catch(function () {});
+      });
+      return Promise.all(jobs);
+    }
+    function downloadExport(payload) {
       var blob = new Blob([payload], { type: "application/json" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
@@ -3311,7 +4028,10 @@
       render();
     }
 
+    requestPersistentStorage();
+    registerInlineServiceWorker();
     render();
+    bootPhotoStorage();
   })();
   </script>
 </body>
